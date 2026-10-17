@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "premiere-pro": {
+      "command": "npx",
+      "args": ["-y", "premiere-pro-mcp"]
+    },
+    "aftereffects": {
+      "command": "npx",
+      "args": ["-y", "@kumoproductions/mcp-aftereffects"]
+    },
+    "davinci-resolve": {
+      "command": "davinci-resolve-mcp"
+    }
+  }
+}

@@ -1,0 +1,123 @@
+# Video AI Pack — instalador Windows (PowerShell 5.1+ / 7)
+#
+#   .\install.ps1                          # skills + hook automático + CLAUDE.md + deps Python
+#   .\install.ps1 -Mcp all                 # + MCPs (premiere, ae, resolve, opusclip, invideo, higgsfield)
+#   .\install.ps1 -Mcp premiere,ae         # só os escolhidos
+#   .\install.ps1 -Community               # + skills Remotion, auto-editor, motion-design (LobzyJay)
+#   .\install.ps1 -Uninstall
+param(
+  [string[]]$Mcp = @(),
+  [switch]$Community,
+  [switch]$Uninstall,
+  [switch]$SkipPip
+)
+$ErrorActionPreference = 'Stop'
+$Pack = $PSScriptRoot
+$ClaudeHome = if ($env:CLAUDE_HOME) { $env:CLAUDE_HOME } else { Join-Path $HOME '.claude' }
+$HookDir = Join-Path $ClaudeHome 'hooks\video-ai-pack'
+$Skills = 'video-orquestrador','video-decupagem','video-colorgrade','video-legendas','video-motion','video-entrega'
+function Say($m) { Write-Host "▸ $m" -ForegroundColor Magenta }
+function Warn($m) { Write-Host "! $m" -ForegroundColor Yellow }
+function Has($c) { [bool](Get-Command $c -ErrorAction SilentlyContinue) }
+
+$Py = if (Has 'python') { 'python' } elseif (Has 'py') { 'py' } else { throw 'Python 3.9+ é obrigatório' }
+$SettingsPath = Join-Path $ClaudeHome 'settings.json'
+$HookScript = Join-Path $HookDir 'video_intent.py'
+
+function Set-Hook([bool]$add) {
+  $s = if ((Test-Path $SettingsPath) -and (Get-Content $SettingsPath -Raw).Trim()) {
+    Get-Content $SettingsPath -Raw | ConvertFrom-Json } else { [pscustomobject]@{} }
+  if (-not $s.PSObject.Properties['hooks']) { $s | Add-Member hooks ([pscustomobject]@{}) }
+  $groups = @()
+  if ($s.hooks.PSObject.Properties['UserPromptSubmit']) {
+    $groups = @($s.hooks.UserPromptSubmit | Where-Object { -not ($_.hooks.command -match 'video_intent\.py') })
+  }
+  if ($add) { $groups += [pscustomobject]@{ hooks = @([pscustomobject]@{ type = 'command'; command = "$Py `"$HookScript`""; timeout = 10 }) } }
+  $s.hooks.PSObject.Properties.Remove('UserPromptSubmit')
+  if ($groups.Count) { $s.hooks | Add-Member UserPromptSubmit $groups }
+  if (-not $s.hooks.PSObject.Properties.Count) { $s.PSObject.Properties.Remove('hooks') }
+  New-Item -ItemType Directory -Force (Split-Path $SettingsPath) | Out-Null
+  $s | ConvertTo-Json -Depth 20 | Set-Content $SettingsPath -Encoding UTF8
+}
+
+function Set-ClaudeMd([bool]$add) {
+  $f = Join-Path $ClaudeHome 'CLAUDE.md'
+  $txt = if (Test-Path $f) { Get-Content $f -Raw } else { '' }
+  $txt = [regex]::Replace($txt, '(?s)\r?\n?<!-- video-ai-pack:start -->.*?<!-- video-ai-pack:end -->\r?\n?', "`n")
+  if ($add) {
+    $snip = (Get-Content (Join-Path $Pack 'config\CLAUDE.md.snippet') -Raw).Trim()
+    $txt = $txt.TrimEnd() + "`n`n<!-- video-ai-pack:start -->`n$snip`n<!-- video-ai-pack:end -->`n"
+  }
+  Set-Content $f $txt.TrimStart() -Encoding UTF8
+}
+
+function Add-Mcp($name, [string[]]$mcpArgs) {
+  & claude mcp remove --scope user $name 2>$null | Out-Null
+  & claude mcp add --scope user @mcpArgs
+  if ($LASTEXITCODE -eq 0) { Say "MCP $name registrado" } else { Warn "falha ao registrar MCP $name" }
+}
+
+if ($Uninstall) {
+  foreach ($s in $Skills) { Remove-Item -Recurse -Force (Join-Path $ClaudeHome "skills\$s") -ErrorAction SilentlyContinue }
+  Remove-Item -Recurse -Force $HookDir -ErrorAction SilentlyContinue
+  Set-Hook $false; Set-ClaudeMd $false
+  if (Has 'claude') { foreach ($m in 'premiere-pro','aftereffects','davinci-resolve','opusclip','invideo','higgsfield') { & claude mcp remove --scope user $m 2>$null | Out-Null } }
+  Say 'Video AI Pack removido.'; return
+}
+
+Say 'Checando dependências'
+if (-not (Has 'ffmpeg')) { Warn 'ffmpeg não encontrado — winget install Gyan.FFmpeg' }
+if (-not (Has 'node'))   { Warn 'Node.js 20+ não encontrado — winget install OpenJS.NodeJS.LTS' }
+if (-not (Has 'claude')) { Warn "CLI 'claude' não encontrada — MCPs não serão registrados" }
+if (-not $SkipPip) {
+  Say 'Instalando faster-whisper e auto-editor'
+  & $Py -m pip install --user --quiet --upgrade faster-whisper auto-editor
+  if ($LASTEXITCODE -ne 0) { Warn 'pip falhou — instale manualmente: pip install faster-whisper auto-editor' }
+}
+
+Say "Instalando skills em $ClaudeHome\skills"
+New-Item -ItemType Directory -Force (Join-Path $ClaudeHome 'skills') | Out-Null
+foreach ($s in $Skills) {
+  $dst = Join-Path $ClaudeHome "skills\$s"
+  Remove-Item -Recurse -Force $dst -ErrorAction SilentlyContinue
+  Copy-Item -Recurse (Join-Path $Pack "skills\$s") $dst
+}
+
+Say 'Registrando hook UserPromptSubmit'
+New-Item -ItemType Directory -Force $HookDir | Out-Null
+Copy-Item (Join-Path $Pack 'hooks\video_intent.py') $HookDir -Force
+Set-Hook $true
+
+Say 'Adicionando regras ao CLAUDE.md global'
+Set-ClaudeMd $true
+
+if ($Mcp.Count -and (Has 'claude')) {
+  if ($Mcp -contains 'all') { $Mcp = 'premiere','ae','resolve','opusclip','invideo','higgsfield' }
+  foreach ($m in $Mcp) {
+    switch ($m) {
+      'premiere'   { Add-Mcp 'premiere-pro' @('premiere-pro','--','npx','-y','premiere-pro-mcp'); & npx -y premiere-pro-mcp --install-cep }
+      'ae'         { Add-Mcp 'aftereffects' @('aftereffects','--','npx','-y','@kumoproductions/mcp-aftereffects')
+                     Warn "AE: ative Preferences > Scripting & Expressions > 'Allow Scripts to Write Files and Access Network'" }
+      'resolve'    { & $Py -m pip install --user --quiet davinci-resolve-mcp; Add-Mcp 'davinci-resolve' @('davinci-resolve','--','davinci-resolve-mcp') }
+      'opusclip'   { Add-Mcp 'opusclip'   @('--transport','http','opusclip','https://mcp.opus.pro/mcp') }
+      'invideo'    { Add-Mcp 'invideo'    @('--transport','http','invideo','https://mcp.invideo.io/mcp') }
+      'higgsfield' { Add-Mcp 'higgsfield' @('--transport','http','higgsfield','https://mcp.higgsfield.ai/mcp') }
+      default      { Warn "MCP desconhecido: $m" }
+    }
+  }
+  Say 'MCPs remotos pedem login OAuth: abra o Claude Code e rode /mcp'
+}
+
+if ($Community) {
+  Say 'Instalando skills da comunidade'
+  if (Has 'npx') { & npx -y skills add remotion-dev/skills; & npx -y skills add WyattBlue/auto-editor }
+  if (Has 'git') {
+    $tmp = Join-Path ([IO.Path]::GetTempPath()) ("mdc" + [guid]::NewGuid())
+    & git clone --depth 1 https://github.com/LobzyJay/motion-design-with-claude.git $tmp
+    if ($LASTEXITCODE -eq 0) { Copy-Item -Recurse -Force (Join-Path $tmp 'skills\*') (Join-Path $ClaudeHome 'skills') }
+    Remove-Item -Recurse -Force $tmp -ErrorAction SilentlyContinue
+  }
+}
+
+Say 'Video AI Pack instalado. Reinicie o Claude Code e teste:'
+Write-Host '   "decupa o video.mp4, colorgrade cinematic e legenda karaokê pra Reels"'
