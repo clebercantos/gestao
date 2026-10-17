@@ -19,6 +19,8 @@
 
 ## Aprendizados técnicos (verificados)
 - 2026-10-17 — No PC há Python 3.15 e 3.12: faster-whisper/ctranslate2 só funcionam no **3.12**. Scripts com transcrição rodam com `py -3.12`; instalador e agente escolhem o 3.12 automaticamente.
+- 2026-10-17 — Os scripts do pack rodam via `py script.py` e o shebang `#!/usr/bin/env python3` faz o launcher escolher o Python 3.13 (o `py` padrão é 3.15, sem wheel do `av`). Não pinar versões: a decodificação por ffmpeg já isola o faster-whisper do av.
+- 2026-10-17 — Em scripts Python no Windows, `Path.write_text/read_text` sem `encoding="utf-8"` usa cp1252: sempre explicitar.
 - 2026-10-17 — Conector **Filmit** na conta: controla AE, Premiere (`pr_*`) e Resolve (`dv_*`) pelo painel Filmit dentro do app (aba MCP → Connect). Plano free tem 50 ações/dia. Ler o estado antes de editar e duplicar a sequência antes de mudanças grandes.
 - 2026-10-17 — MCP do Resolve correto é `npx davinci-resolve-mcp setup` (samuelgursky); o pacote PyPI `davinci-resolve-mcp` é outro projeto e quebra com mcp 2.x. Registrar com o python do venv em AppData (o exe não fica no PATH). Resolve exige Preferences > General > External scripting = Local.
 - 2026-10-17 — faster-whisper 1.2.1 quebra com `av`>=17 (`metadata_errors`) quando auto-editor atualiza o av: decodificar o áudio com ffmpeg (numpy f32le 16k) e passar o array. Corrigido em decupagem.py e legendas.py.
