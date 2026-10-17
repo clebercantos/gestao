@@ -19,6 +19,7 @@
 
 ## Aprendizados técnicos (verificados)
 
+- 2026-10-17 — MCP do Resolve correto é `npx davinci-resolve-mcp setup` (samuelgursky); o pacote PyPI `davinci-resolve-mcp` é outro projeto e quebra com mcp 2.x. Registrar com o python do venv em AppData (o exe não fica no PATH). Resolve exige Preferences > General > External scripting = Local.
 - 2026-10-17 — faster-whisper 1.2.1 quebra com `av`>=17 (`metadata_errors`) quando auto-editor atualiza o av: decodificar o áudio com ffmpeg (numpy f32le 16k) e passar o array. Corrigido em decupagem.py e legendas.py.
 - 2026-10-17 — WhisperModel device "auto" escolhe CUDA e falha sem `cublas64_12.dll`: padrão agora é CPU (env VIDEO_WHISPER_DEVICE=cuda para GPU).
 - 2026-10-17 — ffmpeg 9 removeu `-filter_complex_script`: usar `-filter_complex` inline (ou `-/filter_complex arquivo`). Corrigido em decupagem.py (--render).

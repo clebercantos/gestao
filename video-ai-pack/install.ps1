@@ -137,7 +137,11 @@ if ($Mcp.Count -and (Has 'claude')) {
       'premiere'   { Add-Mcp 'premiere-pro' @('premiere-pro','--','npx','-y','premiere-pro-mcp@latest'); & npx -y premiere-pro-mcp@latest --install-cep }
       'ae'         { Add-Mcp 'aftereffects' @('aftereffects','--','npx','-y','@kumoproductions/mcp-aftereffects@latest')
                      Warn "AE: ative Preferences > Scripting & Expressions > 'Allow Scripts to Write Files and Access Network'" }
-      'resolve'    { & $Py -m pip install --user --quiet davinci-resolve-mcp; Add-Mcp 'davinci-resolve' @('davinci-resolve','--','davinci-resolve-mcp') }
+      'resolve'    { # samuelgursky (o pacote PyPI davinci-resolve-mcp é outro projeto e quebra com mcp 2.x)
+                     'n' | & npx -y davinci-resolve-mcp setup
+                     $RD = Join-Path $env:LOCALAPPDATA 'davinci-resolve-mcp'
+                     Add-Mcp 'davinci-resolve' @('davinci-resolve','--',"$RD\venv\Scripts\python.exe","$RD\src\server.py")
+                     Warn "Resolve: Preferences > General > 'External scripting using' = Local (versão gratuita: Workspace > Scripts > resolve_bridge)" }
       'opusclip'   { Add-Mcp 'opusclip'   @('--transport','http','opusclip','https://mcp.opus.pro/mcp') }
       'invideo'    { Add-Mcp 'invideo'    @('--transport','http','invideo','https://mcp.invideo.io/mcp') }
       'higgsfield' { Add-Mcp 'higgsfield' @('--transport','http','higgsfield','https://mcp.higgsfield.ai/mcp') }

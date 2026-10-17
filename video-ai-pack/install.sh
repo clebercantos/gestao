@@ -154,10 +154,11 @@ if [[ -n "$MCP_LIST" ]] && has claude; then
         add_mcp aftereffects aftereffects -- npx -y @kumoproductions/mcp-aftereffects@latest
         warn "After Effects: ative Preferences > Scripting & Expressions > 'Allow Scripts to Write Files and Access Network'" ;;
       resolve)
-        "$PY" -m pip install --user --quiet davinci-resolve-mcp 2>/dev/null \
-          || "$PY" -m pip install --user --quiet --break-system-packages davinci-resolve-mcp || true
-        add_mcp davinci-resolve davinci-resolve -- davinci-resolve-mcp
-        warn "Resolve 21.1+ também tem MCP oficial — veja README (seção Resolve)" ;;
+        # samuelgursky (o pacote PyPI davinci-resolve-mcp é outro projeto e quebra com mcp 2.x)
+        echo 0 | npx -y davinci-resolve-mcp setup || true
+        RD="${XDG_DATA_HOME:-$HOME/.local/share}/davinci-resolve-mcp"; [ -d "$HOME/Library/Application Support/davinci-resolve-mcp" ] && RD="$HOME/Library/Application Support/davinci-resolve-mcp"
+        add_mcp davinci-resolve davinci-resolve -- "$RD/venv/bin/python" "$RD/src/server.py"
+        warn "Resolve: Preferences > General > 'External scripting using' = Local" ;;
       opusclip)   add_mcp opusclip --transport http opusclip https://mcp.opus.pro/mcp ;;
       invideo)    add_mcp invideo --transport http invideo https://mcp.invideo.io/mcp ;;
       higgsfield) add_mcp higgsfield --transport http higgsfield https://mcp.higgsfield.ai/mcp ;;
