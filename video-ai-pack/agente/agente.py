@@ -118,13 +118,32 @@ def http_text(url, timeout=20):
 
 
 class Lock:
+    """Uma execução por vez. Tarefas agendadas que se sobrepõem (ex.: Saúde no logon + Manutenção)
+    esperam a outra terminar em vez de falhar: falha com código 1 apareceria como erro no Agendador."""
+    ESPERA_MAX = 45 * 60
+    VENCIDO = 2 * 3600
+
     def __enter__(self):
         AGENT_HOME.mkdir(parents=True, exist_ok=True)
         self.p = AGENT_HOME / "agente.lock"
-        if self.p.exists() and time.time() - self.p.stat().st_mtime < 3 * 3600:
-            sys.exit("outra execução do agente está em andamento (agente.lock)")
-        self.p.write_text(str(os.getpid()))
-        return self
+        inicio = time.time()
+        while True:
+            try:
+                fd = os.open(self.p, os.O_CREAT | os.O_EXCL | os.O_WRONLY)  # criação atômica
+                os.write(fd, str(os.getpid()).encode())
+                os.close(fd)
+                return self
+            except FileExistsError:
+                try:
+                    if time.time() - self.p.stat().st_mtime > self.VENCIDO:  # trava esquecida por queda/desligamento
+                        self.p.unlink(missing_ok=True)
+                        continue
+                except FileNotFoundError:
+                    continue
+                if time.time() - inicio > self.ESPERA_MAX:
+                    log("outra execução do agente segue em andamento há mais de 45 min — esta rodada foi pulada")
+                    sys.exit(0)
+                time.sleep(15)
 
     def __exit__(self, *a):
         self.p.unlink(missing_ok=True)
