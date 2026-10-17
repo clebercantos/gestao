@@ -27,4 +27,4 @@ Sessão Claude Code local · branch `claude/video-editing-plugins-research-973ws
 - [ ] Usuário: `/mcp` do conector Adobe (rejeitou as credenciais na reconexão; opcional).
 - [ ] Usuário: fechar o `TEMP_TESTE_CLAUDE.prproj` no Premiere sem salvar.
 - [ ] Reiniciar o app do Claude e testar o MCP do Resolve (agendado 2026-10-18 01:20).
-- [ ] Usuário: revisar e mesclar o PR #1.
+- [x] PR #1 revisado e mesclado em `main` (squash, e95bddc).
