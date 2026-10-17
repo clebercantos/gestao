@@ -57,7 +57,13 @@ def all_words(segs):
             toks = s["text"].split()
             step = (s["end"] - s["start"]) / max(1, len(toks))
             words += [{"start": s["start"] + i * step, "end": s["start"] + (i + 1) * step, "word": t} for i, t in enumerate(toks)]
-    return words
+    merged = []
+    for w in words:  # o whisper separa "bem-vindos" em "bem" + "-vindos"
+        if merged and w["word"].startswith("-"):
+            merged[-1] = {"start": merged[-1]["start"], "end": w["end"], "word": merged[-1]["word"] + w["word"]}
+        else:
+            merged.append(w)
+    return merged
 
 
 def group_cues(words, max_chars, max_lines, max_words=None):

@@ -19,6 +19,8 @@
 
 ## Aprendizados técnicos (verificados)
 - 2026-10-17 — No PC há Python 3.15 e 3.12: faster-whisper/ctranslate2 só funcionam no **3.12**. Scripts com transcrição rodam com `py -3.12`; instalador e agente escolhem o 3.12 automaticamente.
+- 2026-10-17 — Resolve Studio 21.1.1.10 validado via API de scripting (python do venv do davinci-resolve-mcp com RESOLVE_SCRIPT_API/LIB): criar projeto, importar mídia, criar timeline e apagar o projeto temporário funcionam; o Python do agente de saúde é o 3.12.10 e a saúde deu 28/28.
+- 2026-10-17 — Teste da primeira sessão PASSOU: Premiere (MCP premiere-pro via CEP: create_project, import_media, create_sequence_from_clips, split_clip, set_sequence_in_out_points + export_sequence range in_to_out = 3,000 s H.264) e After Effects 26.5 (ae_do: comp.create, keyframe.add, render.start com output "Lossless" .avi = 1 s 1920x1080; o módulo padrão .mp4 precisa do AME).
 - 2026-10-17 — Os scripts do pack rodam via `py script.py` e o shebang `#!/usr/bin/env python3` faz o launcher escolher o Python 3.13 (o `py` padrão é 3.15, sem wheel do `av`). Não pinar versões: a decodificação por ffmpeg já isola o faster-whisper do av.
 - 2026-10-17 — Em scripts Python no Windows, `Path.write_text/read_text` sem `encoding="utf-8"` usa cp1252: sempre explicitar.
 - 2026-10-17 — Conector **Filmit** na conta: controla AE, Premiere (`pr_*`) e Resolve (`dv_*`) pelo painel Filmit dentro do app (aba MCP → Connect). Plano free tem 50 ações/dia. Ler o estado antes de editar e duplicar a sequência antes de mudanças grandes.

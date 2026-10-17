@@ -125,6 +125,7 @@ def refine_with_transcript(keep, segs):
             if b - ce > 0.15:
                 new.append([ce, b])
         keep = new
+    keep = [[a, b] for a, b in keep if b - a >= 0.3]  # sobras de handle viram micro-cortes
     return keep, dropped
 
 
