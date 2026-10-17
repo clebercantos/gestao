@@ -20,6 +20,7 @@
 - (nenhuma ainda; registre aqui toda vez que o usuário disser que algo estava errado)
 
 ## Aprendizados técnicos (verificados)
+- 2026-10-17 — Validação completa no PC após o PR #2: saúde 28/28, 7 skills, 3 tarefas com código 0, lock testado com 2 execuções simultâneas, hooks e memória OK, 7 MCPs conectados (opusclip incluído). O `install` não copiava o `pipeline.*` para `~/.claude/video-ai-pack/tools` (corrigido no .ps1 e no .sh). O conector "claude.ai Adobe" mudou de nome e precisa ser desativado também por esse nome no projeto `gestao`.
 - 2026-10-17 — `pipeline.ps1` validado no Windows (presets reels e youtube): ENTREGA com vídeo, SRT, EDL e LUT; áudio dentro do alvo. O worktree `gestao-pr2` no PC precisa de `git fetch` + checkout da ponta da branch antes de testar.
 - 2026-10-17 — A API do Premiere (via MCP) não aplica LUT `.cube`: aplique manualmente em Lumetri > Creative > Look, ou use o Resolve, onde a API aceita LUT.
 - 2026-10-17 — PowerShell 7 passa argumento vazio (`""`) para comandos nativos e o 5.1 descarta: monte arrays de argumentos (`@pyv`) em vez de `& py $v`.
