@@ -111,9 +111,9 @@ trabalhe automaticamente em cada pedido: aprimorar o prompt e escolher sozinho d
 - [ ] Filmit: painel Filmit no Premiere/AE → aba MCP → Connect (até agora nenhum app conectado).
 - [ ] `/mcp` no Claude Code local: OpusClip e conector Adobe; autorizar o Adobe for creativity no claude.ai.
 - [ ] Premiere: manter um único painel CEP do MCP rodando. After Effects: abrir sem `-m` e permitir scripts.
-- [ ] **Depois de 01:20:** reiniciar o app do Claude/Claude Code para carregar o MCP do Resolve e os hooks novos.
+- [ ] **Depois de 01:20 (agendado pela sessão local para 2026-10-18 01:20):** reiniciar o app do Claude e testar o MCP do Resolve.
 - [ ] Colar `memoria/instrucoes-claude-ai.md` no perfil ou projeto do claude.ai.
-- [ ] Revisar e mesclar o PR #1.
+- [x] PR #1 mesclado na `main` (06:34 UTC). Os ajustes seguintes (skill de áudio, fallback de branch, instruções do claude.ai) vão em um PR novo.
 - [ ] Opcional: repositório privado para a memória (`-RepoMemoria`).
 
 **A conferir (sessão local, depois das aprovações):**
