@@ -17,8 +17,14 @@ Sessão Claude Code local · branch `claude/video-editing-plugins-research-973ws
 - Roteador: "exporta pro Reels" não puxa mais skill de conteúdo social.
 - Instaladores `.ps1` com BOM; instalador do Resolve usa o pacote correto.
 
-## Pendências (só o usuário)
-- [ ] Premiere: painel MCP Bridge "Running" (um único painel CEP).
-- [ ] After Effects: abrir sem `-m` e permitir scripts em rede/arquivos.
-- [ ] `/mcp`: autenticar o conector Adobe; reiniciar o app do Claude para o Resolve aparecer.
-- [ ] Teste da primeira sessão no Premiere/AE depois que estiverem abertos.
+## Validado depois
+- Premiere (CEP) e After Effects 26.5: teste da primeira sessão passou (export de 3 s e render de 1 s conferidos no ffprobe).
+- Resolve Studio 21.1: API de scripting validada (projeto, importação, timeline); falta testar como ferramenta MCP (precisa reiniciar o app; teste agendado).
+- Agente de saúde 28/28; `.ps1` sem erros de sintaxe.
+- Histórico do Git limpo de mídia de teste (`_teste/` agora no .gitignore).
+
+## Pendências
+- [ ] Usuário: `/mcp` do conector Adobe (rejeitou as credenciais na reconexão; opcional).
+- [ ] Usuário: fechar o `TEMP_TESTE_CLAUDE.prproj` no Premiere sem salvar.
+- [ ] Reiniciar o app do Claude e testar o MCP do Resolve (agendado 2026-10-18 01:20).
+- [ ] Usuário: revisar e mesclar o PR #1.

@@ -41,8 +41,9 @@
 - 2026-10-17 — O repositório `clebercantos/gestao` é **público**: não versionar conversas, credenciais nem dados pessoais nele.
 
 ## Decisões em vigor
+- 2026-10-17 — O usuário autorizou o agente a instalar/configurar o que for necessário no PC (MCPs, CLIs) sem pedir a cada vez; continuam exigindo aviso: gastar créditos pagos (> ~US$ 5), publicar, force-push e apagar dados do usuário.
 - 2026-10-17 — Prioridade de rota em vídeo: MCP do app aberto > conector cloud > scripts ffmpeg locais. Sempre manter um projeto editável (EDL/XML).
-- 2026-10-17 — O agente instala sozinho só atualizações do que já foi aprovado e skills auditadas. **MCPs/programas novos só com OK do usuário.**
+- ~~2026-10-17 — O agente instala sozinho só atualizações do que já foi aprovado e skills auditadas. MCPs/programas novos só com OK do usuário.~~ (substituída abaixo)
 - 2026-10-17 — A memória local privada fica em `~/.claude/memoria/` e é a fonte da verdade no PC. Esta pasta do repositório guarda só o que pode ser público.
 - 2026-10-17 — Sistema de memória:
   - `memoria.md` + `INDEX.md` importados em todo CLAUDE.md;
