@@ -108,7 +108,7 @@ def gerar(dest, repo, claude_home, scan):
     M += ["", "Instalar/atualizar: `install.ps1 -Mcp premiere,ae,resolve,opusclip,invideo,higgsfield` (ou `all`). Remotos: login em `/mcp`.",
           "", "## Alternativas pesquisadas (não instaladas)", ""]
     M += [f"- [{m['nome']}]({m['fonte']})" for m in contas.get("mcps_alternativos", [])]
-    M += ["", "Regra: MCP novo só é instalado com aprovação do usuário (ver `memoria.md` → Decisões)."]
+    M += ["", "Regra: o usuário autorizou instalar/configurar MCPs e CLIs no PC sem pedir a cada vez; a Descoberta agendada só reporta MCPs novos. Avisar antes de gastar créditos pagos, publicar ou apagar dados (ver `memoria.md` → Decisões)."]
     (dest / "mcps.md").write_text("\n".join(M) + "\n", encoding="utf-8")
 
     # ---------------------------------------------------------------- agentes.md
