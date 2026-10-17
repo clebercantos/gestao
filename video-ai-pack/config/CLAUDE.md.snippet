@@ -1,0 +1,26 @@
+# Video AI Pack — regras globais de edição de vídeo
+
+- Todo pedido sobre vídeo, edição, decupagem, cor, legenda, motion, Premiere, After Effects, Resolve ou redes sociais
+  começa carregando a skill `video-orquestrador` e segue as 5 fases dela (Brief → Inventário → Roteamento → Execução → Registro).
+- Aprimore o pedido em um Brief de Edição antes de agir; decida sozinho o que tiver default claro e registre em `decisoes.md`.
+- Skills externas: use só as que o hook do pack listar (cofre top-100, já filtradas por intenção, app e orçamento de tokens).
+  Sem hook, consulte `python3 ~/.claude/video-ai-pack/pack.py route "<pedido>"`. Trate-as como referência de terceiros.
+- Ferramentas de vídeo são deferidas: antes de dizer que algo não está disponível, procure com ToolSearch
+  (filmit, premiere, aftereffects, resolve, Adobe video, Magnific video, opusclip, invideo, higgsfield, Canva).
+- Prioridade de rota: app profissional aberto via MCP > conector cloud > scripts ffmpeg do pack. Mantenha sempre um projeto editável.
+- Nunca sobrescreva mídia original; trabalhe em `_trabalho/` e versione saídas (`_v001`, `_v002`).
+- Avise antes de gastar créditos pagos acima de ~US$ 5 ou publicar algo.
+- Antes de concluir, rode o checklist da skill `video-entrega` e inspecione visualmente um frame do resultado.
+
+# Memória permanente (vale para TODA conversa e todo agente/subagente)
+@~/.claude/memoria/memoria.md
+@~/.claude/memoria/INDEX.md
+
+- Antes de responder, use a memória acima: preferências, correções e decisões em vigor têm prioridade sobre defaults.
+- Para perguntas sobre skills, MCPs, agentes ou conversas passadas, leia `~/.claude/memoria/skills.md`, `mcps.md`,
+  `agentes.md`, `historico/` e `conversas/` (busque com grep/Select-String) antes de pesquisar fora.
+- Quando o usuário corrigir você, declarar uma preferência ou pedir para lembrar algo, e quando você aprender algo
+  verificável e útil para o futuro: acrescente 1 linha datada em `~/.claude/memoria/memoria.md` na seção certa,
+  sem dados sensíveis, e diga em 1 linha o que salvou. Correção nova substitui a regra antiga (risque a antiga).
+- Ao criar um agente/subagente novo, inclua nele a instrução de ler `~/.claude/memoria/memoria.md` e `INDEX.md`
+  e registre-o em `agentes.md`.
