@@ -6,6 +6,7 @@ Modos:
   manutencao          atualiza repositório, pack, cofre, pacotes Python/npm, sistema e limpa logs
   descoberta          monitora o ecossistema (skills.sh, npm, PyPI, GitHub, pesquisa por IA),
                       adota skills novas aprovadas nos critérios e gera relatório
+  memoria             regenera skills.md/mcps.md/agentes.md e sincroniza a memória privada (se tiver repo)
   tudo                saude --reparar + manutencao + descoberta
   status              mostra o último resumo
 
@@ -31,6 +32,7 @@ AGENT_HOME = Path(os.environ.get("VIDEO_AGENT_HOME") or (
     Path(os.environ.get("LOCALAPPDATA", Path.home())) / "VideoAIAgent" if WIN else Path.home() / ".local/share/video-ai-agent"))
 CLAUDE_HOME = Path(os.environ.get("CLAUDE_HOME") or Path.home() / ".claude")
 PACK_HOME = CLAUDE_HOME / "video-ai-pack"
+MEMORIA = CLAUDE_HOME / "memoria"
 CFG_PATH = AGENT_HOME / "config.json"
 STATE = AGENT_HOME / "estado"
 REPORTS = AGENT_HOME / "relatorios"
@@ -52,6 +54,7 @@ DEFAULT_CFG = {
     "repo_dir": "", "branch": "main", "apps": [], "apis": [], "mcps": [], "budget": 7000,
     "auto_adotar": True, "max_adocoes": 3, "min_installs": 300, "nota_minima": 70, "max_tokens_skill": 6000,
     "atualizar_sistema": True, "pesquisa_ia": True, "retencao_dias": 30, "notificar": True,
+    "memoria_repo": "",  # repositório git PRIVADO opcional para sincronizar ~/.claude/memoria entre PC e nuvem
 }
 
 
@@ -238,6 +241,12 @@ def saude(reparar=False):
     md = CLAUDE_HOME / "CLAUDE.md"
     chk("regras no CLAUDE.md", md.exists() and "video-ai-pack:start" in md.read_text(encoding="utf-8", errors="replace"),
         str(md), "instalador")
+    hooks_txt = json.dumps(settings.get("hooks", {}))
+    for sc in ("memoria_hook.py", "registrar_conversa.py"):
+        chk(f"hook {sc}", sc in hooks_txt, "registrado" if sc in hooks_txt else "ausente", "instalador")
+    chk("memória (memoria.md)", (MEMORIA / "memoria.md").exists(), str(MEMORIA / "memoria.md"), "instalador")
+    faltam = [f for f in ("INDEX.md", "skills.md", "mcps.md", "agentes.md") if not (MEMORIA / f).exists()]
+    chk("MDs de consulta", not faltam, "faltando: " + ", ".join(faltam) if faltam else "INDEX, skills, mcps, agentes", "memoria")
     for mod in ("faster_whisper", "auto_editor"):
         rc, _ = run([sys.executable, "-c", f"import {mod}"], timeout=120)
         chk(f"python: {mod}", rc == 0, "ok" if rc == 0 else "não instalado", "pip")
@@ -260,6 +269,8 @@ def saude(reparar=False):
             pip_upgrade(c, rep)
         if "sync" in acoes and "instalador" not in acoes and (PACK_HOME / "pack.py").exists():
             pack_cmd("sync")
+        if "memoria" in acoes:
+            memoria(c, rep)
         return saude(reparar=False)  # reconfere e gera o relatório final
 
     falhas = [(i, d) for i, ok, d in checks if not ok]
@@ -280,6 +291,27 @@ def pip_upgrade(c, rep):
     rep.add(f"- pip ({', '.join(pkgs)}): {'ok' if rc == 0 else 'falhou'}")
     if rc:
         rep.alert("pip falhou: " + out[-200:])
+
+
+def memoria(c, rep):
+    """Regenera os MDs de consulta e sincroniza a memória privada (git) se configurada."""
+    d = repo_pack_dir(c)
+    if d:
+        sys.path.insert(0, str(HERE))
+        import memoria_md
+        memoria_md.gerar(MEMORIA, d.parent, CLAUDE_HOME, scan=True)
+        n = len(list((MEMORIA / "conversas").glob("2*.md"))) if (MEMORIA / "conversas").exists() else 0
+        rep.add(f"- memória: skills.md, mcps.md, agentes.md e INDEX.md regenerados; {n} conversas registradas")
+    if (MEMORIA / ".git").exists():
+        g = ["git", "-C", str(MEMORIA)]
+        run([*g, "add", "-A"])
+        if run([*g, "diff", "--cached", "--quiet"])[0]:
+            run([*g, "commit", "-m", f"memoria: atualização automática {now()}"])
+        rc, out = run([*g, "pull", "--rebase", "--autostash"], timeout=300)
+        rc2, out2 = run([*g, "push"], timeout=300) if rc == 0 else (rc, out)
+        rep.add(f"- memória sincronizada com o repositório privado: {'ok' if rc2 == 0 else 'falhou'}")
+        if rc2:
+            rep.alert("sincronização da memória falhou: " + (out2 or out)[-200:])
 
 
 def manutencao():
@@ -306,6 +338,7 @@ def manutencao():
         rc, out = pack_cmd("sync", "--force", timeout=900)
         rep.add(f"- cofre: {out.splitlines()[-1] if out else rc}")
     pip_upgrade(c, rep)
+    memoria(c, rep)
     if which("npm"):
         for m, pkg in NPM_PKGS.items():
             if m not in c["mcps"]:
@@ -571,7 +604,7 @@ def main():
     modo = a[0] if a else "status"
     if modo == "status":
         return status()
-    if modo not in ("saude", "manutencao", "descoberta", "tudo"):
+    if modo not in ("saude", "manutencao", "descoberta", "memoria", "tudo"):
         sys.exit(__doc__)
     with Lock():
         log(f"início: {modo}")
@@ -582,6 +615,10 @@ def main():
                 manutencao()
             if modo in ("descoberta", "tudo"):
                 descoberta()
+            if modo == "memoria":
+                rep = Report("memoria")
+                memoria(cfg(), rep)
+                rep.save()
         except Exception as e:  # nunca morre calado: registra e alerta
             rep = Report(modo + "-erro")
             rep.alert(f"falha inesperada: {e!r}")

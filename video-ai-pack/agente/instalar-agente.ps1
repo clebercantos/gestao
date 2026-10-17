@@ -5,6 +5,7 @@
 #
 #   .\instalar-agente.ps1 -Apps premiere,aftereffects,resolve -Mcp premiere,ae,resolve
 #   .\instalar-agente.ps1 -Apps premiere -Mcp premiere,opusclip -Apis elevenlabs -SemPesquisaIA
+#   .\instalar-agente.ps1 -RepoMemoria https://github.com/<voce>/memoria-claude.git   # repo PRIVADO p/ sincronizar a memória
 #   .\instalar-agente.ps1 -Desinstalar
 #
 # Rotinas agendadas:
@@ -18,6 +19,7 @@ param(
   [int]$Budget = 7000,
   [string]$RepoUrl = 'https://github.com/clebercantos/gestao.git',
   [string]$Branch = 'main',
+  [string]$RepoMemoria = '',
   [switch]$SemPesquisaIA,
   [switch]$SemAtualizarSistema,
   [switch]$Desinstalar
@@ -103,9 +105,24 @@ $set = @{
   repo_dir = $repoRoot; branch = (git -C $repoRoot rev-parse --abbrev-ref HEAD); apps = @($Apps); apis = @($Apis); mcps = @($Mcp)
   budget = $Budget; pesquisa_ia = (-not $SemPesquisaIA); atualizar_sistema = (-not $SemAtualizarSistema)
 }
+if ($RepoMemoria) { $set.memoria_repo = $RepoMemoria }
 foreach ($k in $set.Keys) { $cfg | Add-Member -Force -NotePropertyName $k -NotePropertyValue $set[$k] }
 [IO.File]::WriteAllText($cfgPath, ($cfg | ConvertTo-Json -Depth 5), (New-Object Text.UTF8Encoding($false)))
 Say "Configuração salva em $cfgPath"
+
+# ------------------------------------------------------------------ 3b. memória privada sincronizada (opcional)
+$memDir = Join-Path $HOME '.claude\memoria'
+if ($RepoMemoria -and -not (Test-Path (Join-Path $memDir '.git'))) {
+  Say "Conectando a memória ao repositório privado $RepoMemoria"
+  $tmp = "$memDir.clone"
+  Remove-Item -Recurse -Force $tmp -ErrorAction SilentlyContinue
+  git clone $RepoMemoria $tmp
+  if (Test-Path (Join-Path $tmp '.git')) {
+    if (Test-Path $memDir) { Copy-Item (Join-Path $memDir '*') $tmp -Recurse -Force -Exclude '.git' }  # mantém o que já existia no PC
+    Remove-Item -Recurse -Force $memDir -ErrorAction SilentlyContinue
+    Move-Item $tmp $memDir
+  } else { Warn 'Não foi possível clonar o repositório da memória (ele precisa existir e ser seu). Seguindo sem sincronizar.' }
+}
 
 # ------------------------------------------------------------------ 4. Video AI Pack
 Say 'Instalando o Video AI Pack (skills, hook, roteador, cofre, MCPs)'
@@ -160,5 +177,6 @@ Say 'Video AI Agent instalado e ativo.'
 Write-Host "  Relatórios:  $AgentHome\relatorios\ultimo.md  (atalho 'Video AI Agent' na área de trabalho)"
 Write-Host "  Tarefas:     Agendador de Tarefas > Biblioteca > VideoAIAgent"
 Write-Host "  Manual:      powershell -File `"$runner`" -Modo tudo"
+Write-Host "  Memória:     $memDir  (memoria.md, INDEX.md, skills.md, mcps.md, agentes.md, conversas\)"
 Write-Host ''
 Warn 'Falta só você: rode  claude  uma vez para fazer login, depois /mcp para autorizar os conectores remotos.'

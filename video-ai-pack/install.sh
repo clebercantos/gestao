@@ -43,24 +43,27 @@ has()  { command -v "$1" >/dev/null 2>&1; }
 PY=python3; has python3 || PY=python
 has "$PY" || { echo "Python 3.9+ é obrigatório" >&2; exit 1; }
 
-settings_hook() {  # $1 = add|remove
-  "$PY" - "$CLAUDE_HOME/settings.json" "$PACK_HOME/video_intent.py" "$1" "$PY" <<'EOF'
+settings_hook() {  # $1 = add|remove — hooks do pack: roteador de vídeo, memória e registro de conversas
+  "$PY" - "$CLAUDE_HOME/settings.json" "$PACK_HOME" "$1" "$PY" <<'EOF'
 import json, sys, pathlib
-path, script, mode, py = pathlib.Path(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4]
-data = json.loads(path.read_text()) if path.exists() and path.read_text().strip() else {}
+path, home, mode, py = pathlib.Path(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4]
+OURS = {"UserPromptSubmit": ["video_intent.py", "memoria_hook.py"], "SessionEnd": ["registrar_conversa.py"]}
+data = json.loads(path.read_text(encoding="utf-8-sig")) if path.exists() and path.read_text(encoding="utf-8-sig").strip() else {}
 hooks = data.setdefault("hooks", {})
-groups = [g for g in hooks.get("UserPromptSubmit", [])
-          if not any("video_intent.py" in h.get("command", "") for h in g.get("hooks", []))]
-if mode == "add":
-    groups.append({"hooks": [{"type": "command", "command": f'{py} "{script}"', "timeout": 10}]})
-if groups:
-    hooks["UserPromptSubmit"] = groups
-else:
-    hooks.pop("UserPromptSubmit", None)
+for event, scripts in OURS.items():
+    groups = [g for g in hooks.get(event, [])
+              if not any(sc in h.get("command", "") for h in g.get("hooks", []) for sc in scripts)]
+    if mode == "add":
+        for sc in scripts:
+            groups.append({"hooks": [{"type": "command", "command": f'{py} "{pathlib.Path(home) / sc}"', "timeout": 10 if event != "SessionEnd" else 30}]})
+    if groups:
+        hooks[event] = groups
+    else:
+        hooks.pop(event, None)
 if not hooks:
     data.pop("hooks", None)
 path.parent.mkdir(parents=True, exist_ok=True)
-path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 EOF
 }
 
@@ -81,6 +84,7 @@ if [[ $UNINSTALL == 1 ]]; then
   say "Removendo Video AI Pack de $CLAUDE_HOME"
   for s in "${SKILLS[@]}"; do rm -rf "$CLAUDE_HOME/skills/$s"; done
   rm -rf "$PACK_HOME" "$OLD_HOOK_DIR"
+  say "A pasta $CLAUDE_HOME/memoria foi mantida (é sua memória). Apague manualmente se quiser."
   settings_hook remove
   claude_md remove
   if has claude; then
@@ -117,15 +121,16 @@ find "$CLAUDE_HOME/skills" -path '*video-*/scripts/*.py' -exec chmod +x {} +
 say "Instalando roteador e catálogo das 100 skills em $PACK_HOME"
 rm -rf "$OLD_HOOK_DIR"
 mkdir -p "$PACK_HOME"
-cp "$PACK_DIR/tools/pack.py" "$PACK_DIR/hooks/video_intent.py" "$PACK_DIR/catalogo/skills.json" "$PACK_HOME/"
-chmod +x "$PACK_HOME/pack.py" "$PACK_HOME/video_intent.py"
+cp "$PACK_DIR/tools/pack.py" "$PACK_DIR"/hooks/*.py "$PACK_DIR/catalogo/skills.json" "$PACK_HOME/"
+chmod +x "$PACK_HOME"/*.py
 [[ ${#CFG_ARGS[@]} -gt 0 ]] && "$PY" "$PACK_HOME/pack.py" config "${CFG_ARGS[@]}" >/dev/null
 if [[ $SYNC == 1 ]]; then
   say "Baixando o cofre (SKILL.md das 100 skills, ~1 MB — fora de ~/.claude/skills, custo fixo zero)"
   "$PY" "$PACK_HOME/pack.py" sync || warn "sync falhou — rode depois: $PY $PACK_HOME/pack.py sync"
 fi
-say "Registrando hook UserPromptSubmit (roteamento automático por pedido)"
+say "Registrando hooks: roteamento de vídeo, memória (correções) e registro de conversas"
 settings_hook add
+
 
 # 4. Instruções globais
 say "Adicionando regras do pack em $CLAUDE_HOME/CLAUDE.md"
@@ -177,6 +182,11 @@ if [[ $COMMUNITY == 1 ]]; then
     rm -rf "$tmp"
   fi
 fi
+
+# Memória permanente: ~/.claude/memoria (memoria.md nunca é sobrescrita; skills/mcps/agentes.md são regenerados)
+say "Gerando memória e MDs de consulta em $CLAUDE_HOME/memoria"
+"$PY" "$PACK_DIR/agente/memoria_md.py" --dest "$CLAUDE_HOME/memoria" --repo "$PACK_DIR/.." --claude-home "$CLAUDE_HOME" --scan >/dev/null \
+  || warn "falha ao gerar a memória — rode: $PY $PACK_DIR/agente/memoria_md.py --dest $CLAUDE_HOME/memoria --scan"
 
 "$PY" "$PACK_HOME/pack.py" stats || true
 say "Video AI Pack instalado. Reinicie o Claude Code e teste:"

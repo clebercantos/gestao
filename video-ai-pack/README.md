@@ -164,6 +164,24 @@ No Claude Code, você pode pedir: *"use o agente video-ai-mantenedor para revisa
 
 O ajuste fino fica em `%LOCALAPPDATA%\VideoAIAgent\config.json`: `auto_adotar`, `max_adocoes`, `nota_minima`, `min_installs`, `max_tokens_skill`, `retencao_dias` e `notificar`.
 
+### Memória permanente (todas as conversas e agentes consultam)
+O instalador cria `~/.claude/memoria/` e faz **toda** sessão do Claude Code ler esses arquivos (import no `~/.claude/CLAUDE.md`).
+Isso vale também para os agentes, subagentes e o `claude -p` do agente agendado:
+
+| Arquivo | O que guarda | Quem atualiza |
+|---|---|---|
+| `memoria.md` | preferências, **correções**, aprendizados e decisões (sempre carregado) | o Claude, quando você corrige ou ele aprende algo (o hook `memoria_hook.py` detecta "não, está errado", "prefiro", "lembre disso"…) |
+| `INDEX.md` | mapa da memória e como buscar | instalador/agente |
+| `skills.md` | todas as skills: pack, instaladas no PC, conta Claude, top-100, adotadas | agente (diário) |
+| `mcps.md` | MCPs registrados (`claude mcp list`), conectores claude.ai, MCPs do pack, alternativas | agente (diário) |
+| `agentes.md` | agentes, subagentes, hooks e automações ativos | agente (diário) |
+| `conversas/` | resumo automático de **cada** sessão do Claude Code (pedidos, respostas, arquivos, ferramentas), com segredos mascarados | hook `registrar_conversa.py` (SessionEnd) |
+| `historico/` | resumos curados das conversas importantes | o Claude |
+
+- **Privacidade:** `~/.claude/memoria/` fica só no seu PC. Este repositório é **público**, por isso a pasta `memoria/` dele guarda apenas a versão sem dados sensíveis. É essa versão que as sessões na nuvem leem, via `CLAUDE.md` na raiz.
+- **Sincronizar PC ↔ nuvem:** crie um repositório **privado** e instale com `.\instalar-agente.ps1 -RepoMemoria https://github.com/<voce>/<repo-privado>.git`. A manutenção diária faz commit, pull e push da memória.
+- **Conversas no claude.ai (web/app):** elas não rodam no seu PC, então os hooks não as alcançam. Para que também consultem a memória, coloque o conteúdo de `memoria.md` nas instruções de um Projeto do claude.ai ou nas preferências do perfil.
+
 ### Passos manuais (uma vez)
 1. **Premiere:** depois do `--install-cep`, reinicie o Premiere e abra `Window > Extensions > MCP for Adobe Premiere Pro`. Para Claude Desktop, há um `.mcpb` na [release do projeto](https://github.com/leancoderkavy/premiere-pro-mcp).
 2. **After Effects:** `Preferences > Scripting & Expressions > Allow Scripts to Write Files and Access Network`. No macOS, autorize o terminal em *Privacidade e Segurança > Automação*.

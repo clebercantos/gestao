@@ -35,23 +35,32 @@ function Has($c) { [bool](Get-Command $c -ErrorAction SilentlyContinue) }
 # 'py' primeiro: 'python' pode ser o atalho da Microsoft Store
 $Py = if (Has 'py') { 'py' } elseif (Has 'python') { 'python' } else { throw 'Python 3.9+ é obrigatório' }
 $SettingsPath = Join-Path $ClaudeHome 'settings.json'
-$HookScript = Join-Path $PackHome 'video_intent.py'
 
 # UTF-8 sem BOM: o Set-Content -Encoding UTF8 do PowerShell 5.1 grava BOM, que quebra parsers JSON
 function Write-Utf8([string]$path, [string]$text) { [IO.File]::WriteAllText($path, $text, (New-Object Text.UTF8Encoding($false))) }
 
 function Set-Hook([bool]$add) {
+  # hooks do pack: roteador de vídeo, memória (correções) e registro de conversas
+  $ours = [ordered]@{ UserPromptSubmit = @('video_intent.py', 'memoria_hook.py'); SessionEnd = @('registrar_conversa.py') }
   $s = if ((Test-Path $SettingsPath) -and (Get-Content $SettingsPath -Raw -Encoding UTF8).Trim()) {
     Get-Content $SettingsPath -Raw -Encoding UTF8 | ConvertFrom-Json } else { [pscustomobject]@{} }
   if (-not $s.PSObject.Properties['hooks']) { $s | Add-Member hooks ([pscustomobject]@{}) }
-  $groups = @()
-  if ($s.hooks.PSObject.Properties['UserPromptSubmit']) {
-    $groups = @($s.hooks.UserPromptSubmit | Where-Object { -not ($_.hooks.command -match 'video_intent\.py') })
+  foreach ($event in $ours.Keys) {
+    $scripts = $ours[$event]
+    $groups = @()
+    if ($s.hooks.PSObject.Properties[$event]) {
+      $groups = @($s.hooks.$event | Where-Object { $cmds = @($_.hooks.command) -join ' '; -not ($scripts | Where-Object { $cmds -like "*$_*" }) })
+    }
+    if ($add) {
+      foreach ($sc in $scripts) {
+        $timeout = if ($event -eq 'SessionEnd') { 30 } else { 10 }
+        $groups += [pscustomobject]@{ hooks = @([pscustomobject]@{ type = 'command'; command = "$Py `"$(Join-Path $PackHome $sc)`""; timeout = $timeout }) }
+      }
+    }
+    $s.hooks.PSObject.Properties.Remove($event)
+    if ($groups.Count) { $s.hooks | Add-Member $event $groups }
   }
-  if ($add) { $groups += [pscustomobject]@{ hooks = @([pscustomobject]@{ type = 'command'; command = "$Py `"$HookScript`""; timeout = 10 }) } }
-  $s.hooks.PSObject.Properties.Remove('UserPromptSubmit')
-  if ($groups.Count) { $s.hooks | Add-Member UserPromptSubmit $groups }
-  if (-not $s.hooks.PSObject.Properties.Count) { $s.PSObject.Properties.Remove('hooks') }
+  if (-not @($s.hooks.PSObject.Properties).Count) { $s.PSObject.Properties.Remove('hooks') }
   New-Item -ItemType Directory -Force (Split-Path $SettingsPath) | Out-Null
   Write-Utf8 $SettingsPath ($s | ConvertTo-Json -Depth 20)
 }
@@ -77,6 +86,7 @@ if ($Uninstall) {
   foreach ($s in $Skills) { Remove-Item -Recurse -Force (Join-Path $ClaudeHome "skills\$s") -ErrorAction SilentlyContinue }
   Remove-Item -Recurse -Force $PackHome, $OldHookDir -ErrorAction SilentlyContinue
   Set-Hook $false; Set-ClaudeMd $false
+  Say "A pasta $(Join-Path $ClaudeHome 'memoria') foi mantida (é sua memória). Apague manualmente se quiser."
   if (Has 'claude') { foreach ($m in 'premiere-pro','aftereffects','davinci-resolve','opusclip','invideo','higgsfield') { & claude mcp remove --scope user $m 2>$null | Out-Null } }
   Say 'Video AI Pack removido.'; return
 }
@@ -102,7 +112,8 @@ foreach ($s in $Skills) {
 Say "Instalando roteador e catálogo das 100 skills em $PackHome"
 Remove-Item -Recurse -Force $OldHookDir -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force $PackHome | Out-Null
-Copy-Item (Join-Path $Pack 'tools\pack.py'), (Join-Path $Pack 'hooks\video_intent.py'), (Join-Path $Pack 'catalogo\skills.json') $PackHome -Force
+Copy-Item (Join-Path $Pack 'tools\pack.py'), (Join-Path $Pack 'catalogo\skills.json') $PackHome -Force
+Copy-Item (Join-Path $Pack 'hooks\*.py') $PackHome -Force
 $PackPy = Join-Path $PackHome 'pack.py'
 $cfg = @()
 if ($Apps.Count) { $cfg += '--apps', ($Apps -join ',') }
@@ -113,7 +124,7 @@ if (-not $NoSync) {
   Say 'Baixando o cofre (SKILL.md das 100 skills, ~1 MB, custo fixo zero)'
   & $Py $PackPy sync
 }
-Say 'Registrando hook UserPromptSubmit (roteamento automático por pedido)'
+Say 'Registrando hooks: roteamento de vídeo, memória (correções) e registro de conversas'
 Set-Hook $true
 
 Say 'Adicionando regras ao CLAUDE.md global'
@@ -146,6 +157,10 @@ if ($Community) {
     Remove-Item -Recurse -Force $tmp -ErrorAction SilentlyContinue
   }
 }
+
+# Memória permanente: ~/.claude/memoria (memoria.md nunca é sobrescrita; skills/mcps/agentes.md são regenerados)
+Say "Gerando memória e MDs de consulta em $(Join-Path $ClaudeHome 'memoria')"
+& $Py (Join-Path $Pack 'agente\memoria_md.py') --dest (Join-Path $ClaudeHome 'memoria') --repo (Split-Path $Pack -Parent) --claude-home $ClaudeHome --scan | Out-Null
 
 & $Py $PackPy stats
 Say 'Video AI Pack instalado. Reinicie o Claude Code e teste:'

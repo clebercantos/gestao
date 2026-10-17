@@ -1,0 +1,40 @@
+{
+  "_nota": "O que estava disponível na conta Claude do usuário (claude.ai / Claude Code) em 2026-10-17. Atualize quando conectar ou remover algo.",
+  "conectores_claude_ai": [
+    {"nome": "Adobe for creativity", "uso": "Photoshop/Lightroom/Premiere/Express/Firefly/Acrobat na nuvem: video_create_quick_cut, video_resize, media_enhance_speech, media_summarize, fontes, PDF, imagem", "status": "conectado; a versão plugin pede autorização em Settings → Connectors"},
+    {"nome": "Magnific", "uso": "vídeo/imagem/áudio por IA: video_color_grade, video_color_transfer, video_magic_cut, video_upscale, video_hdr, audio_clean_speech, brand kits", "status": "conectado (consome créditos)"},
+    {"nome": "Canva", "uso": "designs, brand kits, import de motion do Claude, exportação", "status": "conectado"},
+    {"nome": "Adobe Experience Manager", "uso": "conteúdo AEM (sites, fragments)", "status": "conectado"},
+    {"nome": "Adobe Marketing Agent", "uso": "agente de marketing Adobe", "status": "conectado"},
+    {"nome": "Claude Docs", "uso": "documentos vivos compartilháveis", "status": "conectado"},
+    {"nome": "Gmail", "uso": "e-mail", "status": "conectado"},
+    {"nome": "Google Calendar", "uso": "agenda", "status": "conectado"},
+    {"nome": "Google Drive", "uso": "arquivos", "status": "conectado"},
+    {"nome": "GitHub", "uso": "repositório clebercantos/gestao (sessões Claude Code na nuvem)", "status": "conectado"}
+  ],
+  "skills_conta": {
+    "adobe-for-creativity (plugin)": ["adobe", "adobe-anydocx", "adobe-anyexcel", "adobe-anypdf", "adobe-anypptx", "adobe-batch-edit-photos", "adobe-create-pdfs-from-data", "adobe-create-social-variations", "adobe-design-from-template", "adobe-design-to-pdf", "adobe-document-review", "adobe-edit-quick-cut", "adobe-fonts", "adobe-resize-photos-and-videos", "adobe-retouch-portraits"],
+    "anthropic-skills": ["motion-design", "gsap-core", "gsap-timeline", "gsap-scrolltrigger", "gsap-react", "gsap-plugins", "gsap-performance", "gsap-frameworks", "gsap-utils", "genjutsu", "design-dna", "threejs-animation", "threejs-fundamentals", "threejs-geometry", "threejs-interaction", "threejs-lighting", "threejs-loaders", "threejs-materials", "threejs-postprocessing", "threejs-shaders", "threejs-textures", "docs", "docx", "pdf", "pptx", "xlsx", "google-workspace", "deep-research", "computer-use", "chrome-browser", "built-in-browser", "skill-creator", "import-memory", "morning"],
+    "Claude Code (embutidas)": ["dataviz", "artifact-design", "artifact-diagramming", "artifact-capabilities", "update-config", "keybindings-help", "code-review", "simplify", "security-review", "fewer-permission-prompts", "loop", "claude-api", "run", "plugin-authoring", "workflow-authoring", "session-start-hook", "init"]
+  },
+  "mcps_pack": [
+    {"nome": "premiere-pro", "tipo": "local (CEP/UXP)", "comando": "npx -y premiere-pro-mcp@latest", "fonte": "https://github.com/leancoderkavy/premiere-pro-mcp", "obs": "rodar `npx -y premiere-pro-mcp@latest --install-cep` e abrir Window > Extensions > MCP for Adobe Premiere Pro"},
+    {"nome": "aftereffects", "tipo": "local", "comando": "npx -y @kumoproductions/mcp-aftereffects@latest", "fonte": "https://github.com/kumoproductions/mcp-aftereffects", "obs": "AE: Preferences > Scripting & Expressions > Allow Scripts to Write Files and Access Network; Node 24+"},
+    {"nome": "davinci-resolve", "tipo": "local (Python)", "comando": "davinci-resolve-mcp (pip install davinci-resolve-mcp)", "fonte": "https://github.com/lordhoell/davinci-resolve-mcp", "obs": "Resolve aberto; alguns recursos só no Studio. Resolve 21.1+ tem MCP oficial"},
+    {"nome": "opusclip", "tipo": "remoto (OAuth)", "comando": "https://mcp.opus.pro/mcp", "fonte": "https://www.opus.pro/mcp", "obs": "clipes virais, legendas, reframe, agendamento"},
+    {"nome": "invideo", "tipo": "remoto (OAuth)", "comando": "https://mcp.invideo.io/mcp", "fonte": "https://invideo.io/mcp/", "obs": "timeline, cor, mix, legendas, exporta para Premiere/FCP/Resolve"},
+    {"nome": "higgsfield", "tipo": "remoto (OAuth, pago)", "comando": "https://mcp.higgsfield.ai/mcp", "fonte": "https://higgsfield.ai/creator-hub/help-center/integrations/how-do-i-connect-higgsfield-to-claude", "obs": "Katana: motion editável no After Effects"}
+  ],
+  "mcps_alternativos": [
+    {"nome": "DaVinci Resolve 21.1 (oficial Blackmagic)", "fonte": "https://www.cgchannel.com/2026/09/blackmagic-design-releases-resolve-21-1/"},
+    {"nome": "barckley75/resolve-claude-mcp", "fonte": "https://github.com/barckley75/resolve-claude-mcp"},
+    {"nome": "samuelgursky/davinci-resolve-mcp (+10 skills)", "fonte": "https://skills.sh/samuelgursky/davinci-resolve-mcp/resolve-session"},
+    {"nome": "hetpatel-11/Adobe_Premiere_Pro_MCP", "fonte": "https://github.com/hetpatel-11/adobe_premiere_pro_mcp"},
+    {"nome": "antipaster/Adobe-Premiere-Pro-MCP (170+ ferramentas)", "fonte": "https://github.com/antipaster/adobe-premiere-pro-mcp"},
+    {"nome": "TheLlamainator/after-effects-mcp", "fonte": "https://github.com/LobzyJay/motion-design-with-claude"},
+    {"nome": "JUNKDOGE-JOE/after-effects-mcp", "fonte": "https://github.com/JUNKDOGE-JOE/after-effects-mcp"},
+    {"nome": "Synthetic AE MCP (270+ ferramentas)", "fonte": "https://synthetic.com.ar/ae-mcp"},
+    {"nome": "OpenClip MCP", "fonte": "https://openclip.app/mcp"},
+    {"nome": "Palmier Pro (editor macOS com MCP)", "fonte": "https://explainx.ai/blog/palmier-pro-ai-video-editor-mcp-claude-guide-2026"}
+  ]
+}

@@ -1,6 +1,6 @@
 # Video AI Agent — execução no Windows (chamado pelo Agendador de Tarefas)
-#   agente.ps1 -Modo saude|manutencao|descoberta|tudo|status
-param([ValidateSet('saude', 'manutencao', 'descoberta', 'tudo', 'status')][string]$Modo = 'saude')
+#   agente.ps1 -Modo saude|manutencao|descoberta|memoria|tudo|status
+param([ValidateSet('saude', 'manutencao', 'descoberta', 'memoria', 'tudo', 'status')][string]$Modo = 'saude')
 $ErrorActionPreference = 'Continue'
 $env:PYTHONUTF8 = '1'
 # o Agendador não herda o PATH atualizado da sessão: recarrega do registro (inclui ~\.local\bin do Claude Code)

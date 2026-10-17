@@ -11,3 +11,16 @@
 - Nunca sobrescreva mídia original; trabalhe em `_trabalho/` e versione saídas (`_v001`, `_v002`).
 - Avise antes de gastar créditos pagos acima de ~US$ 5 ou publicar algo.
 - Antes de concluir, rode o checklist da skill `video-entrega` e inspecione visualmente um frame do resultado.
+
+# Memória permanente (vale para TODA conversa e todo agente/subagente)
+@~/.claude/memoria/memoria.md
+@~/.claude/memoria/INDEX.md
+
+- Antes de responder, use a memória acima: preferências, correções e decisões em vigor têm prioridade sobre defaults.
+- Para perguntas sobre skills, MCPs, agentes ou conversas passadas, leia `~/.claude/memoria/skills.md`, `mcps.md`,
+  `agentes.md`, `historico/` e `conversas/` (busque com grep/Select-String) antes de pesquisar fora.
+- Quando o usuário corrigir você, declarar uma preferência ou pedir para lembrar algo, e quando você aprender algo
+  verificável e útil para o futuro: acrescente 1 linha datada em `~/.claude/memoria/memoria.md` na seção certa,
+  sem dados sensíveis, e diga em 1 linha o que salvou. Correção nova substitui a regra antiga (risque a antiga).
+- Ao criar um agente/subagente novo, inclua nele a instrução de ler `~/.claude/memoria/memoria.md` e `INDEX.md`
+  e registre-o em `agentes.md`.
