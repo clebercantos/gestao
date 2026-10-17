@@ -72,15 +72,24 @@ APP_ENTRY = {"premiere": ["leancoderkavy/premiere-pro-mcp/edit-premiere-project"
 
 
 def load_catalog():
+    """Catálogo curado + skills adotadas pelo agente de manutenção (skills.local.json)."""
     if not CATALOG:
         sys.exit("catálogo skills.json não encontrado (rode o instalador)")
-    return json.loads(CATALOG.read_text())["skills"]
+    skills = json.loads(CATALOG.read_text(encoding="utf-8-sig"))["skills"]
+    local = HOME / "skills.local.json"
+    if local.exists():
+        try:
+            known = {s["id"] for s in skills}
+            skills += [s for s in json.loads(local.read_text(encoding="utf-8-sig"))["skills"] if s["id"] not in known]
+        except (ValueError, KeyError):
+            print(f"aviso: {local} inválido, ignorado", file=sys.stderr)
+    return skills
 
 
 def load_cfg():
     cfg = dict(DEFAULT_CFG)
     try:
-        cfg.update(json.loads(CONFIG.read_text()))
+        cfg.update(json.loads(CONFIG.read_text(encoding="utf-8-sig")))
     except (OSError, ValueError):
         pass
     return cfg
@@ -242,6 +251,9 @@ def cmd_stats():
 
 
 def main():
+    # Windows: stdout em pipe usa cp1252 por padrão e quebraria com "→", acentos etc.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     a = sys.argv[1:]
     if not a or a[0] in ("-h", "--help"):
         print(__doc__)

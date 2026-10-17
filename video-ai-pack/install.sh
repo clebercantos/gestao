@@ -143,10 +143,10 @@ if [[ -n "$MCP_LIST" ]] && has claude; then
   for m in "${M[@]}"; do
     case "$m" in
       premiere)
-        add_mcp premiere-pro premiere-pro -- npx -y premiere-pro-mcp
-        npx -y premiere-pro-mcp --install-cep || warn "rode depois: npx -y premiere-pro-mcp --install-cep (painel CEP do Premiere)" ;;
+        add_mcp premiere-pro premiere-pro -- npx -y premiere-pro-mcp@latest
+        npx -y premiere-pro-mcp@latest --install-cep || warn "rode depois: npx -y premiere-pro-mcp --install-cep (painel CEP do Premiere)" ;;
       ae)
-        add_mcp aftereffects aftereffects -- npx -y @kumoproductions/mcp-aftereffects
+        add_mcp aftereffects aftereffects -- npx -y @kumoproductions/mcp-aftereffects@latest
         warn "After Effects: ative Preferences > Scripting & Expressions > 'Allow Scripts to Write Files and Access Network'" ;;
       resolve)
         "$PY" -m pip install --user --quiet davinci-resolve-mcp 2>/dev/null \

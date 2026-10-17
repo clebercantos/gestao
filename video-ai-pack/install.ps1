@@ -17,7 +17,12 @@ param(
   [string[]]$Apis = @(),
   [int]$Budget = 0
 )
-$ErrorActionPreference = 'Stop'
+# Continue: no Windows PowerShell 5.1, stderr de comandos nativos (claude, npx, pip) com 'Stop' vira erro fatal
+$ErrorActionPreference = 'Continue'
+# aceita listas vindas de -File / Agendador ("premiere,ae") além de arrays
+$Mcp = @($Mcp -split ',' | Where-Object { $_ })
+$Apps = @($Apps -split ',' | Where-Object { $_ })
+$Apis = @($Apis -split ',' | Where-Object { $_ })
 $Pack = $PSScriptRoot
 $ClaudeHome = if ($env:CLAUDE_HOME) { $env:CLAUDE_HOME } else { Join-Path $HOME '.claude' }
 $PackHome = Join-Path $ClaudeHome 'video-ai-pack'
@@ -27,13 +32,17 @@ function Say($m) { Write-Host "▸ $m" -ForegroundColor Magenta }
 function Warn($m) { Write-Host "! $m" -ForegroundColor Yellow }
 function Has($c) { [bool](Get-Command $c -ErrorAction SilentlyContinue) }
 
-$Py = if (Has 'python') { 'python' } elseif (Has 'py') { 'py' } else { throw 'Python 3.9+ é obrigatório' }
+# 'py' primeiro: 'python' pode ser o atalho da Microsoft Store
+$Py = if (Has 'py') { 'py' } elseif (Has 'python') { 'python' } else { throw 'Python 3.9+ é obrigatório' }
 $SettingsPath = Join-Path $ClaudeHome 'settings.json'
 $HookScript = Join-Path $PackHome 'video_intent.py'
 
+# UTF-8 sem BOM: o Set-Content -Encoding UTF8 do PowerShell 5.1 grava BOM, que quebra parsers JSON
+function Write-Utf8([string]$path, [string]$text) { [IO.File]::WriteAllText($path, $text, (New-Object Text.UTF8Encoding($false))) }
+
 function Set-Hook([bool]$add) {
-  $s = if ((Test-Path $SettingsPath) -and (Get-Content $SettingsPath -Raw).Trim()) {
-    Get-Content $SettingsPath -Raw | ConvertFrom-Json } else { [pscustomobject]@{} }
+  $s = if ((Test-Path $SettingsPath) -and (Get-Content $SettingsPath -Raw -Encoding UTF8).Trim()) {
+    Get-Content $SettingsPath -Raw -Encoding UTF8 | ConvertFrom-Json } else { [pscustomobject]@{} }
   if (-not $s.PSObject.Properties['hooks']) { $s | Add-Member hooks ([pscustomobject]@{}) }
   $groups = @()
   if ($s.hooks.PSObject.Properties['UserPromptSubmit']) {
@@ -44,18 +53,18 @@ function Set-Hook([bool]$add) {
   if ($groups.Count) { $s.hooks | Add-Member UserPromptSubmit $groups }
   if (-not $s.hooks.PSObject.Properties.Count) { $s.PSObject.Properties.Remove('hooks') }
   New-Item -ItemType Directory -Force (Split-Path $SettingsPath) | Out-Null
-  $s | ConvertTo-Json -Depth 20 | Set-Content $SettingsPath -Encoding UTF8
+  Write-Utf8 $SettingsPath ($s | ConvertTo-Json -Depth 20)
 }
 
 function Set-ClaudeMd([bool]$add) {
   $f = Join-Path $ClaudeHome 'CLAUDE.md'
-  $txt = if (Test-Path $f) { Get-Content $f -Raw } else { '' }
+  $txt = if (Test-Path $f) { Get-Content $f -Raw -Encoding UTF8 } else { '' }
   $txt = [regex]::Replace($txt, '(?s)\r?\n?<!-- video-ai-pack:start -->.*?<!-- video-ai-pack:end -->\r?\n?', "`n")
   if ($add) {
-    $snip = (Get-Content (Join-Path $Pack 'config\CLAUDE.md.snippet') -Raw).Trim()
+    $snip = (Get-Content (Join-Path $Pack 'config\CLAUDE.md.snippet') -Raw -Encoding UTF8).Trim()
     $txt = $txt.TrimEnd() + "`n`n<!-- video-ai-pack:start -->`n$snip`n<!-- video-ai-pack:end -->`n"
   }
-  Set-Content $f $txt.TrimStart() -Encoding UTF8
+  Write-Utf8 $f $txt.TrimStart()
 }
 
 function Add-Mcp($name, [string[]]$mcpArgs) {
@@ -114,8 +123,8 @@ if ($Mcp.Count -and (Has 'claude')) {
   if ($Mcp -contains 'all') { $Mcp = 'premiere','ae','resolve','opusclip','invideo','higgsfield' }
   foreach ($m in $Mcp) {
     switch ($m) {
-      'premiere'   { Add-Mcp 'premiere-pro' @('premiere-pro','--','npx','-y','premiere-pro-mcp'); & npx -y premiere-pro-mcp --install-cep }
-      'ae'         { Add-Mcp 'aftereffects' @('aftereffects','--','npx','-y','@kumoproductions/mcp-aftereffects')
+      'premiere'   { Add-Mcp 'premiere-pro' @('premiere-pro','--','npx','-y','premiere-pro-mcp@latest'); & npx -y premiere-pro-mcp@latest --install-cep }
+      'ae'         { Add-Mcp 'aftereffects' @('aftereffects','--','npx','-y','@kumoproductions/mcp-aftereffects@latest')
                      Warn "AE: ative Preferences > Scripting & Expressions > 'Allow Scripts to Write Files and Access Network'" }
       'resolve'    { & $Py -m pip install --user --quiet davinci-resolve-mcp; Add-Mcp 'davinci-resolve' @('davinci-resolve','--','davinci-resolve-mcp') }
       'opusclip'   { Add-Mcp 'opusclip'   @('--transport','http','opusclip','https://mcp.opus.pro/mcp') }

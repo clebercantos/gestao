@@ -24,6 +24,10 @@ def fonte(s):
 
 
 def main() -> None:
+    # Windows: stdout em pipe usa cp1252 por padrão e quebraria com "→", acentos etc.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stdin.reconfigure(encoding="utf-8")
     try:
         prompt = json.load(sys.stdin).get("prompt", "")
     except Exception:

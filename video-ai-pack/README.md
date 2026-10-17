@@ -93,6 +93,7 @@ Pedidos que não são de vídeo não custam nada.
 | Entrega | `skills/video-entrega` | Presets por plataforma, loudness e checklist de QA |
 | Regras globais | `config/CLAUDE.md.snippet` | Prioridades, segurança da mídia original, limite de gasto |
 | Prompts | `prompts/biblioteca.md` | Modelos prontos para Premiere, Resolve, AE, vertical e legendas |
+| Agente Windows | `agente/` | `instalar-agente.ps1` (instala tudo e agenda), `agente.py`/`agente.ps1` (saúde, manutenção, descoberta), subagente `video-ai-mantenedor` |
 
 ---
 
@@ -125,6 +126,43 @@ Set-ExecutionPolicy -Scope Process Bypass
 | `--uninstall` | Remove tudo e deixa o resto do `settings.json` e do `CLAUDE.md` como estava |
 
 O instalador é idempotente: rodar de novo atualiza sem duplicar.
+
+### Video AI Agent: instalação e manutenção automáticas no Windows
+Um único script instala tudo e deixa um agente cuidando da instalação sozinho.
+Não precisa de administrador. Abra o **PowerShell** (não precisa de admin) e rode:
+```powershell
+Set-ExecutionPolicy -Scope Process Bypass
+git clone https://github.com/clebercantos/gestao.git $env:USERPROFILE\gestao
+cd $env:USERPROFILE\gestao\video-ai-pack\agente
+.\instalar-agente.ps1 -Apps premiere,aftereffects,resolve -Mcp premiere,ae,resolve
+```
+(Sem o Git instalado, baixe o ZIP do repositório e rode o script de dentro da pasta `video-ai-pack\agente`. O script instala o Git e o resto.)
+
+O que ele faz:
+1. Instala o que falta via `winget`: Git, Python 3.12, Node LTS e FFmpeg. Instala também o **Claude Code** (instalador oficial).
+2. Instala o pack (skills, hook, roteador, cofre top-100), os MCPs escolhidos e o subagente `video-ai-mantenedor`.
+3. Agenda três rotinas em **Agendador de Tarefas → VideoAIAgent**:
+
+| Rotina | Quando | O que faz |
+|---|---|---|
+| Saude | ao fazer logon (+5 min) e a cada 6 h | Confere 20 itens (ferramentas, pack, hook, cofre, MCPs, apps, disco) e **repara sozinha** o que faltar |
+| Manutencao | todo dia às 03:17 (ou quando o PC ligar) | `git pull` do pack com reinstalação se mudou, atualiza o cofre, pip, painel CEP do Premiere quando sai versão nova, `winget upgrade`, `claude update` e limpa logs |
+| Descoberta | segundas às 09:13 | Monitora ~1.900 skills no skills.sh, versões de MCPs (npm/PyPI/GitHub) e roda uma **pesquisa semanal com o Claude na web**. Adota até 3 skills novas aprovadas nos critérios (auditoria limpa, nota ≥ 70, tokens ≤ 6k, escopo de vídeo) |
+
+4. Mostra uma **notificação do Windows** quando há alerta. Os relatórios ficam em `%LOCALAPPDATA%\VideoAIAgent\relatorios\ultimo.md`, com um atalho na área de trabalho.
+
+**Limite de segurança:** o agente aplica sozinho as atualizações do que você já aprovou e adota skills, que são só arquivos de instrução auditados.
+**MCPs, conectores e programas novos** aparecem no relatório com o comando de instalação, mas só entram com o seu OK.
+No Claude Code, você pode pedir: *"use o agente video-ai-mantenedor para revisar o relatório"*.
+
+| Comando | Para quê |
+|---|---|
+| `powershell -File agente.ps1 -Modo status` | Último resumo |
+| `powershell -File agente.ps1 -Modo tudo` | Roda tudo agora |
+| `.\instalar-agente.ps1 -Desinstalar` | Remove tarefas, agente e pack (mantém Git, Python, Node e Claude) |
+| `-SemPesquisaIA`, `-SemAtualizarSistema`, `-Branch <nome>` | Opções do instalador |
+
+O ajuste fino fica em `%LOCALAPPDATA%\VideoAIAgent\config.json`: `auto_adotar`, `max_adocoes`, `nota_minima`, `min_installs`, `max_tokens_skill`, `retencao_dias` e `notificar`.
 
 ### Passos manuais (uma vez)
 1. **Premiere:** depois do `--install-cep`, reinicie o Premiere e abra `Window > Extensions > MCP for Adobe Premiere Pro`. Para Claude Desktop, há um `.mcpb` na [release do projeto](https://github.com/leancoderkavy/premiere-pro-mcp).
