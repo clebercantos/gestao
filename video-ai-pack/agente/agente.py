@@ -37,7 +37,7 @@ CFG_PATH = AGENT_HOME / "config.json"
 STATE = AGENT_HOME / "estado"
 REPORTS = AGENT_HOME / "relatorios"
 LOGS = AGENT_HOME / "logs"
-OWN_SKILLS = ["video-orquestrador", "video-decupagem", "video-colorgrade", "video-legendas", "video-motion", "video-entrega"]
+OWN_SKILLS = ["video-orquestrador", "video-decupagem", "video-colorgrade", "video-legendas", "video-motion", "video-entrega", "video-audio"]
 MCP_NAMES = {"premiere": "premiere-pro", "ae": "aftereffects", "resolve": "davinci-resolve",
              "opusclip": "opusclip", "invideo": "invideo", "higgsfield": "higgsfield"}
 # resolve: samuelgursky via npx (o pacote PyPI "davinci-resolve-mcp" é outro projeto e quebra com mcp 2.x)
@@ -240,7 +240,7 @@ def saude(reparar=False):
     hook_ok = "video_intent.py" in json.dumps(settings.get("hooks", {}))
     chk("hook UserPromptSubmit", hook_ok, str(CLAUDE_HOME / "settings.json"), "instalador")
     miss = [s for s in OWN_SKILLS if not (CLAUDE_HOME / "skills" / s / "SKILL.md").exists()]
-    chk("skills do pack", not miss, "faltando: " + ", ".join(miss) if miss else "6/6", "instalador")
+    chk("skills do pack", not miss, "faltando: " + ", ".join(miss) if miss else f"{len(OWN_SKILLS)}/{len(OWN_SKILLS)}", "instalador")
     md = CLAUDE_HOME / "CLAUDE.md"
     chk("regras no CLAUDE.md", md.exists() and "video-ai-pack:start" in md.read_text(encoding="utf-8", errors="replace"),
         str(md), "instalador")
@@ -325,7 +325,16 @@ def manutencao():
     if d and (d.parent / ".git").exists():
         repo = str(d.parent)
         before = run(["git", "-C", repo, "rev-parse", "HEAD"])[1]
-        run(["git", "-C", repo, "fetch", "origin", c["branch"]], timeout=300)
+        rc, _ = run(["git", "-C", repo, "fetch", "origin", c["branch"]], timeout=300)
+        if rc and c["branch"] != "main":
+            # a branch do PR some depois da mesclagem: passa a seguir a main
+            if run(["git", "-C", repo, "fetch", "origin", "main"], timeout=300)[0] == 0 and \
+                    run(["git", "-C", repo, "checkout", "main"], timeout=120)[0] == 0:
+                rep.alert(f"branch '{c['branch']}' não existe mais no GitHub (PR mesclado?) — o agente passou a seguir a main")
+                c["branch"] = "main"
+                cfg_salvo = load_json(CFG_PATH, {})
+                cfg_salvo["branch"] = "main"
+                save_json(CFG_PATH, cfg_salvo)
         rc, out = run(["git", "-C", repo, "merge", "--ff-only", f"origin/{c['branch']}"], timeout=300)
         after = run(["git", "-C", repo, "rev-parse", "HEAD"])[1]
         if rc:

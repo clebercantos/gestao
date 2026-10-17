@@ -16,7 +16,7 @@ MEM = Path(os.environ.get("CLAUDE_MEMORIA") or Path.home() / ".claude" / "memori
 GATILHO = (r"^(nao|errado|incorreto|negativo)\b|esta errad|ta errad|voce errou|nao e (assim|isso)|nao era isso|nao foi isso"
            r"|na verdade|corrig|prefiro|eu prefiro|sempre que|de agora em diante|a partir de agora|daqui pra frente"
            r"|nunca (mais )?(faca|use|coloque)|nao (faca|use|coloque) mais|pare de|lembr[ae]|anot[ae]|guard[ae] (isso|essa)"
-           r"|salv[ae] (isso |essa |isto )?na (sua )?memoria|memoriz|aprenda|grave isso"
+           r"|salv[ae] (isso |essa |isto )?na (sua )?memoria|para a memoria|memoriz|aprenda|grave isso"
            r"|^(no|wrong)\b|actually|remember (this|that)|from now on")
 
 

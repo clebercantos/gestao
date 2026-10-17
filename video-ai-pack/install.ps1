@@ -27,7 +27,7 @@ $Pack = $PSScriptRoot
 $ClaudeHome = if ($env:CLAUDE_HOME) { $env:CLAUDE_HOME } else { Join-Path $HOME '.claude' }
 $PackHome = Join-Path $ClaudeHome 'video-ai-pack'
 $OldHookDir = Join-Path $ClaudeHome 'hooks\video-ai-pack'
-$Skills = 'video-orquestrador','video-decupagem','video-colorgrade','video-legendas','video-motion','video-entrega'
+$Skills = 'video-orquestrador','video-decupagem','video-colorgrade','video-legendas','video-motion','video-entrega','video-audio'
 function Say($m) { Write-Host "▸ $m" -ForegroundColor Magenta }
 function Warn($m) { Write-Host "! $m" -ForegroundColor Yellow }
 function Has($c) { [bool](Get-Command $c -ErrorAction SilentlyContinue) }

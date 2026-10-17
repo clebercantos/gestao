@@ -57,7 +57,8 @@ APIS = {"elevenlabs": r"elevenlabs", "openai": r"openai|whisper api", "higgsfiel
 VIDEO_GATE = r"v[ií]deo|video|clip|footage|filmag|timeline|sequ[eê]ncia|edi[cç][aã]o|editar|montagem|premiere|after ?effects|resolve|davinci|reels|shorts|tiktok|youtube|\.(mp4|mov|mxf|braw|r3d|mkv)\b|legenda|colorgrad|motion|decupa|remotion|hyperframes|lottie|podcast"
 # skills próprias do pack que cobrem cada intenção
 OWN = {"decupagem": "video-decupagem", "cor": "video-colorgrade", "legendas": "video-legendas",
-       "motion": "video-motion", "entrega": "video-entrega", "social": "video-entrega"}
+       "motion": "video-motion", "entrega": "video-entrega", "social": "video-entrega",
+       "audio": "video-audio"}
 # categorias do catálogo consultadas por intenção (em ordem de preferência)
 CATS = {"decupagem": ["decupagem"], "cor": ["cor"], "legendas": ["legendas"], "motion": ["motion"],
         "audio": ["audio"], "entrega": ["entrega"], "social": ["social", "entrega"],
@@ -250,7 +251,7 @@ def cmd_stats():
     body = [s["tokens_corpo"] for s in cat if s["tokens_corpo"]]
     n = lambda x: f"{x:,}".replace(",", ".")
     print(f"Instalar as 100 como skills: ~{n(desc)} tokens fixos por sessão (só descrições) + gatilhos concorrentes")
-    print(f"Video AI Pack: ~250 tokens fixos (6 descrições próprias) + até {n(load_cfg()['budget'])} por pedido de vídeo, 0 fora dele")
+    print(f"Video AI Pack: ~280 tokens fixos (7 descrições próprias) + até {n(load_cfg()['budget'])} por pedido de vídeo, 0 fora dele")
     print(f"Corpo dos SKILL.md: mediana {n(sorted(body)[len(body) // 2])} t | maior {n(max(body))} t | soma {n(sum(body))} t")
 
 

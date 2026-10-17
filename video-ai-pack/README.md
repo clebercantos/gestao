@@ -91,6 +91,7 @@ Pedidos que não são de vídeo não custam nada.
 | Legendas | `skills/video-legendas` + `legendas.py` | SRT/VTT (42 car., 2 linhas, 17 CPS), ASS karaokê/padrão/minimal, glossário, burn-in |
 | Motion | `skills/video-motion` | Rotas AE/Remotion/Higgsfield, easing, durações, expressões prontas |
 | Entrega | `skills/video-entrega` | Presets por plataforma, loudness e checklist de QA |
+| Áudio | `skills/video-audio` + `audio.py` | Limpeza de voz (ruído medido), loudness por plataforma (−14/−23/−16 LUFS), trilha com ducking |
 | Regras globais | `config/CLAUDE.md.snippet` | Prioridades, segurança da mídia original, limite de gasto |
 | Prompts | `prompts/biblioteca.md` | Modelos prontos para Premiere, Resolve, AE, vertical e legendas |
 | Agente Windows | `agente/` | `instalar-agente.ps1` (instala tudo e agenda), `agente.py`/`agente.ps1` (saúde, manutenção, descoberta), subagente `video-ai-mantenedor` |

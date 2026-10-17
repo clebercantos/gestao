@@ -151,7 +151,8 @@ def gerar(dest, repo, claude_home, scan):
          "| `skills.md` | todas as skills: pack, instaladas, conta Claude, top-100, adotadas | agente (diário) |",
          "| `mcps.md` | MCPs registrados, conectores claude.ai, MCPs do pack e alternativas | agente (diário) |",
          "| `agentes.md` | agentes, subagentes, hooks e automações | agente (diário) |",
-         "| `historico/` | resumos curados das conversas importantes | Claude |"]
+         "| `historico/` | resumos curados das conversas importantes | Claude |",
+         "| `instrucoes-claude-ai.md` | texto para colar no claude.ai (perfil/projeto) para as conversas web lerem esta memória | Claude |"]
     if privado:
         I.append("| `conversas/` | resumo automático de **toda** sessão Claude Code deste PC (privado) | hook SessionEnd |")
     I += ["", "Regras: veja `memoria.md`. Correção do usuário → registrar em `memoria.md` na hora, com data."]
@@ -161,6 +162,8 @@ def gerar(dest, repo, claude_home, scan):
         if not (dest / "memoria.md").exists() and (seed / "memoria.md").exists():
             shutil.copy2(seed / "memoria.md", dest / "memoria.md")
         (dest / "historico").mkdir(exist_ok=True)
+        if (seed / "instrucoes-claude-ai.md").exists():
+            shutil.copy2(seed / "instrucoes-claude-ai.md", dest / "instrucoes-claude-ai.md")
         for h in (seed / "historico").glob("*.md"):
             if not (dest / "historico" / h.name).exists():
                 shutil.copy2(h, dest / "historico" / h.name)

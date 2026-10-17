@@ -9,5 +9,6 @@ Consulte antes de responder. Para buscar: `grep -ri "termo" <pasta da memória>`
 | `mcps.md` | MCPs registrados, conectores claude.ai, MCPs do pack e alternativas | agente (diário) |
 | `agentes.md` | agentes, subagentes, hooks e automações | agente (diário) |
 | `historico/` | resumos curados das conversas importantes | Claude |
+| `instrucoes-claude-ai.md` | texto para colar no claude.ai (perfil/projeto) para as conversas web lerem esta memória | Claude |
 
 Regras: veja `memoria.md`. Correção do usuário → registrar em `memoria.md` na hora, com data.
