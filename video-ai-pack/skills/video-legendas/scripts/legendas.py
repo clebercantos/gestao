@@ -175,7 +175,7 @@ def main():
     out = Path(a.out or src.parent / f"{src.stem}_legendas")
     out.mkdir(parents=True, exist_ok=True)
     w, h = probe_size(src)
-    segs = json.loads(Path(a.json).read_text()) if a.json else transcribe(src, a.model, a.lang)
+    segs = json.loads(Path(a.json).read_text(encoding="utf-8")) if a.json else transcribe(src, a.model, a.lang)
     words = all_words(apply_glossary(segs, a.glossario))
 
     if a.estilo == "karaoke":
