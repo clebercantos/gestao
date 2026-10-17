@@ -116,6 +116,7 @@ trabalhe automaticamente em cada pedido: aprimorar o prompt e escolher sozinho d
 - [ ] Reiniciar o app do Claude e testar o MCP do Resolve. Já está liberado: o usuário está em São Paulo e passou de 01:20. A sessão local tinha agendado para 2026-10-18 01:20, mas pode ser antes.
 - [ ] A sessão local bateu o limite de 5 h às 06:39 UTC (renovou às 07:50 UTC); a lista de tarefas foi reenviada.
 - [ ] Colar `memoria/instrucoes-claude-ai.md` no perfil ou projeto do claude.ai.
+- [x] PR #2 mesclado na `main` (19:55 UTC, merge 239b704): skill de áudio, pipeline, ajustes do agente e memória.
 - [x] PR #1 mesclado na `main` (06:34 UTC). Os ajustes seguintes (skill de áudio, fallback de branch, instruções do claude.ai) vão em um PR novo.
 - [ ] Opcional: repositório privado para a memória (`-RepoMemoria`).
 

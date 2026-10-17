@@ -46,6 +46,7 @@
 - 2026-10-17 — O repositório `clebercantos/gestao` é **público**: não versionar conversas, credenciais nem dados pessoais nele.
 
 ## Decisões em vigor
+- 2026-10-17 — O usuário autorizou usar o PC dele como for preciso para continuar o trabalho e validar as configurações, sem pedir permissão a cada passo (a sessão local só roda sem prompts se ele puser o modo Auto). Continuam exigindo aviso: apagar mídia ou dados, publicar, force-push e gastar créditos pagos.
 - 2026-10-17 — O usuário autorizou o agente a instalar/configurar o que for necessário no PC (MCPs, CLIs) sem pedir a cada vez; continuam exigindo aviso: gastar créditos pagos (> ~US$ 5), publicar, force-push e apagar dados do usuário.
 - 2026-10-17 — No PC, o projeto `gestao` foi isolado pelo usuário: ficam só `magnific-plugins` (rota principal para Premiere/AE/Resolve), `premiere-pro`, `aftereffects`, `davinci-resolve`, `opusclip` e Claude Docs. Filmit, Adobe, Canva, Gmail/Drive/Calendar e os `data:*` estão desativados ali (as outras pastas não mudaram).
 - 2026-10-17 — Para "faz tudo"/lotes, use o `pipeline.py`/`pipeline.ps1` (sem tokens); o Claude entra para revisar o `decisoes.md` e ajustar no app.
