@@ -20,6 +20,7 @@
 - (nenhuma ainda; registre aqui toda vez que o usuário disser que algo estava errado)
 
 ## Aprendizados técnicos (verificados)
+- 2026-10-17 — `pipeline.ps1` validado no Windows (presets reels e youtube): ENTREGA com vídeo, SRT, EDL e LUT; áudio dentro do alvo. O worktree `gestao-pr2` no PC precisa de `git fetch` + checkout da ponta da branch antes de testar.
 - 2026-10-17 — A API do Premiere (via MCP) não aplica LUT `.cube`: aplique manualmente em Lumetri > Creative > Look, ou use o Resolve, onde a API aceita LUT.
 - 2026-10-17 — PowerShell 7 passa argumento vazio (`""`) para comandos nativos e o 5.1 descarta: monte arrays de argumentos (`@pyv`) em vez de `& py $v`.
 - 2026-10-17 — No PC há Python 3.15 e 3.12: faster-whisper/ctranslate2 só funcionam no **3.12**. Scripts com transcrição rodam com `py -3.12`; instalador e agente escolhem o 3.12 automaticamente.

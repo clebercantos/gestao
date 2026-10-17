@@ -102,12 +102,14 @@ trabalhe automaticamente em cada pedido: aprimorar o prompt e escolher sozinho d
   - After Effects 26.5 (comp, keyframes, render Lossless; `.mp4` exige o AME);
   - Resolve Studio 21.1.1.10 (projeto, import, timeline);
   - Saúde do agente: 28/28;
-  - pipeline decupagem → cor → legendas com fala TTS.
+  - pipeline decupagem → cor → legendas com fala TTS;
+  - `pipeline.ps1` no Windows (16:05 UTC): reels 1080x1920 com karaokê gravado, 39,7 s → 20 s, −23,7 → −14,4 LUFS; youtube 1920x1080 com SRT separado. Os dois geraram EDL e `grade.cube`.
 - O usuário pediu que **reinícios do Claude** fiquem para **depois de 01:20** (horário local).
 
 ## Pendências abertas
 **Usuário:**
-- [ ] Aprovar os pedidos de permissão pendentes na sessão local (PowerShell e brainferno-adobe).
+- [x] Aprovar os pedidos de permissão pendentes na sessão local (aprovados às 16:03 UTC).
+- [ ] Opcional: escolher uma pasta para o `pipeline.ps1 -Pasta X -Registrar` vigiar.
 - [ ] Filmit: painel Filmit no Premiere/AE → aba MCP → Connect (até agora nenhum app conectado).
 - [ ] `/mcp` no Claude Code local: OpusClip e conector Adobe; autorizar o Adobe for creativity no claude.ai.
 - [ ] Premiere: manter um único painel CEP do MCP rodando. After Effects: abrir sem `-m` e permitir scripts.
