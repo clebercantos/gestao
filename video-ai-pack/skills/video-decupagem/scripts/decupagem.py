@@ -67,6 +67,17 @@ def keep_from_silences(duration, sils, open_start, handle):
     return keep
 
 
+def texto_do_trecho(segs, x, b):
+    """Texto falado dentro de [x, b): usa as palavras (ponto médio no trecho); sem palavras, o segmento inteiro."""
+    out = []
+    for s in segs:
+        if not (s["start"] < b and s["end"] > x):
+            continue
+        ws = s.get("words") or []
+        out += [w["word"] for w in ws if x <= (w["start"] + w["end"]) / 2 < b] if ws else [s["text"]]
+    return " ".join(out)
+
+
 def transcribe(path, model_name, lang):
     try:
         from faster_whisper import WhisperModel
@@ -131,9 +142,7 @@ def write_edl(keep, fps, clip_name, path):
         lines.append(f"* FROM CLIP NAME: {clip_name}")
         lines.append("")
         rec += b - a
-    Path(path).write_text("\n".join(lines))
-
-
+    Path(path).write_text("\n".join(lines), encoding="utf-8")
 def render(src, keep, out, has_video):
     parts, labels = [], []
     for i, (a, b) in enumerate(keep):
@@ -143,7 +152,7 @@ def render(src, keep, out, has_video):
         labels.append((f"[v{i}]" if has_video else "") + f"[a{i}]")
     graph = ";".join(parts) + ";" + "".join(labels) + f"concat=n={len(keep)}:v={1 if has_video else 0}:a=1" + ("[v][a]" if has_video else "[a]")
     script = Path(out).with_suffix(".filter.txt")
-    script.write_text(graph)
+    script.write_text(graph, encoding="utf-8")
     cmd = ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", str(src)]
     graph = Path(script).read_text(encoding="utf-8")
     # ffmpeg>=7 removeu -filter_complex_script (agora -/filter_complex); grafo curto vai inline em qualquer versão
@@ -178,12 +187,11 @@ def main():
         segs = transcribe(src, a.model, a.lang)
         keep, extra = refine_with_transcript(keep, segs)
         dropped += extra
-        (out / "transcricao.json").write_text(json.dumps(segs, ensure_ascii=False, indent=2))
-
+        (out / "transcricao.json").write_text(json.dumps(segs, ensure_ascii=False, indent=2), encoding="utf-8")
     kept_total = sum(b - x for x, b in keep)
     result = [{"in": round(x, 3), "out": round(b, 3),
-               "texto": " ".join(s["text"] for s in segs if s["start"] < b and s["end"] > x)} for x, b in keep]
-    (out / "segmentos.json").write_text(json.dumps(result, ensure_ascii=False, indent=2))
+               "texto": texto_do_trecho(segs, x, b)} for x, b in keep]
+    (out / "segmentos.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
     write_edl(keep, fps, src.name, out / "cortes.edl")
 
     md = [f"# Decupagem — {src.name}", "",
@@ -193,8 +201,7 @@ def main():
     md += [f"| {i} | {tc(r['in'], fps)} | {tc(r['out'], fps)} | {r['texto'][:90]} |" for i, r in enumerate(result, 1)]
     md += ["", "## Descartado", "", "| Tipo | In | Out | Texto |", "|---|---|---|---|"]
     md += [f"| {d['tipo']} | {tc(d['in'], fps)} | {tc(d['out'], fps)} | {d.get('texto', '')} |" for d in dropped]
-    (out / "decupagem.md").write_text("\n".join(md) + "\n")
-
+    (out / "decupagem.md").write_text("\n".join(md) + "\n", encoding="utf-8")
     if a.render and keep:
         render(src, keep, out / "corte.mp4", has_video)
     print(json.dumps({"saida": str(out), "original_s": round(duration, 2), "mantido_s": round(kept_total, 2),

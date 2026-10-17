@@ -121,6 +121,10 @@ def route(prompt, cfg=None, catalog=None):
     catalog = catalog or load_catalog()
     by_id = {s["id"]: s for s in catalog}
     intents, apps, apis = detect(prompt)
+    # "exporta pro Reels" é formato de entrega, não criação de conteúdo social (gancho, SEO, copy)
+    if "social" in intents and "entrega" in intents and not re.search(
+            r"gancho|\bhook\b|viral|seo|thumbnail|miniatura|t[ií]tulo|descri[cç][aã]o|hashtag|roteiro|copy", prompt, re.I):
+        intents = [i for i in intents if i != "social"]
     if not intents:
         intents = ["decupagem", "cor", "legendas", "entrega"]
     allowed_apps = set(apps) or set(cfg["apps"])

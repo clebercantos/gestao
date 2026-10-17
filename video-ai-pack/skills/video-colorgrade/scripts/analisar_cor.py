@@ -135,7 +135,7 @@ def write_cube(chain, out_path, size=33):
             for r in range(size):
                 c = interp(r / (size - 1), g / (size - 1), b / (size - 1))
                 lines.append(f"{c[0]:.6f} {c[1]:.6f} {c[2]:.6f}")
-    Path(out_path).write_text("\n".join(lines) + "\n")
+    Path(out_path).write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def main():
@@ -177,7 +177,7 @@ def main():
     render_chain = ",".join(c for c in (lut_chain, FINISH.get(a.look, "")) if c) or "null"
 
     write_cube(lut_chain, out / "grade.cube")
-    (out / "filtro.txt").write_text(render_chain + "\n")
+    (out / "filtro.txt").write_text(render_chain + "\n", encoding="utf-8")
     t_mid = times[len(times) // 2]
     subprocess.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-ss", f"{t_mid:.2f}", "-i", str(src),
                     "-frames:v", "1", "-filter_complex",
@@ -187,7 +187,7 @@ def main():
               "media": {k: round(x, 1) for k, x in avg.items()}, "variacao_luma_entre_amostras": round(spread, 1),
               "consistencia": "ok" if spread < 25 else "planos com exposição muito diferente: fazer shot match por plano",
               "decisoes": why, "filtro": render_chain, "amostras": samples}
-    (out / "cor.json").write_text(json.dumps(report, ensure_ascii=False, indent=2))
+    (out / "cor.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     if a.apply:
         subprocess.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", str(src), "-vf", render_chain,
                         "-c:v", "libx264", "-crf", "17", "-preset", "medium", "-c:a", "copy", str(out / "graded.mp4")],

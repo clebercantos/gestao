@@ -42,7 +42,7 @@ def transcribe(path, model_name, lang):
 def apply_glossary(segs, path):
     if not path:
         return segs
-    rules = [l.split("=", 1) for l in Path(path).read_text().splitlines() if "=" in l]
+    rules = [l.split("=", 1) for l in Path(path).read_text(encoding="utf-8").splitlines() if "=" in l]
     for s in segs:
         for w in s["words"]:
             for bad, good in rules:
