@@ -10,6 +10,8 @@
 - 2026-10-17 — Fala português do Brasil; respostas e documentos em PT-BR.
 - 2026-10-17 — Trabalha com edição de vídeo (Trevisa Films): Adobe Premiere, After Effects, DaVinci Resolve, motion design, colorgrade, decupagem e legendas.
 - 2026-10-17 — Usa **Windows** no computador local; acompanha as sessões na nuvem pelo app do Claude.
+- 2026-10-17 — Fuso horário: **America/Sao_Paulo** (UTC−3). Horários que ele cita (ex.: "depois de 01:20") são locais; converta antes de agendar (01:20 BRT = 04:20 UTC).
+- 2026-10-17 — Prefere adiar reinícios do Claude/Claude Code para a madrugada (depois de 01:20); planos com limite de uso de 5 h podem pausar a sessão local no meio do trabalho.
 - 2026-10-17 — Quer tudo **automático e autônomo**: prompt aprimorado, escolha da ferramenta e manutenção sem precisar pedir.
 - 2026-10-17 — Quer que correções e aprendizados virem memória permanente (este arquivo), e que conversas, skills, MCPs e agentes fiquem documentados em MD para consulta.
 - 2026-10-17 — Prefere decisões baseadas em dados da comunidade (uso, qualidade, custo de tokens), não em listas genéricas.
