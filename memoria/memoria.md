@@ -10,6 +10,8 @@
 - 2026-10-17 — Fala português do Brasil; respostas e documentos em PT-BR.
 - 2026-10-17 — Trabalha com edição de vídeo (Trevisa Films): Adobe Premiere, After Effects, DaVinci Resolve, motion design, colorgrade, decupagem e legendas.
 - 2026-10-17 — Usa **Windows** no computador local; acompanha as sessões na nuvem pelo app do Claude.
+- 2026-10-17 — Fuso horário: **America/Sao_Paulo** (UTC−3). Horários que ele cita (ex.: "depois de 01:20") são locais; converta antes de agendar (01:20 BRT = 04:20 UTC).
+- 2026-10-17 — Prefere adiar reinícios do Claude/Claude Code para a madrugada (depois de 01:20); planos com limite de uso de 5 h podem pausar a sessão local no meio do trabalho.
 - 2026-10-17 — Quer tudo **automático e autônomo**: prompt aprimorado, escolha da ferramenta e manutenção sem precisar pedir.
 - 2026-10-17 — Quer que correções e aprendizados virem memória permanente (este arquivo), e que conversas, skills, MCPs e agentes fiquem documentados em MD para consulta.
 - 2026-10-17 — Prefere decisões baseadas em dados da comunidade (uso, qualidade, custo de tokens), não em listas genéricas.
@@ -18,6 +20,9 @@
 - (nenhuma ainda; registre aqui toda vez que o usuário disser que algo estava errado)
 
 ## Aprendizados técnicos (verificados)
+- 2026-10-17 — `pipeline.ps1` validado no Windows (presets reels e youtube): ENTREGA com vídeo, SRT, EDL e LUT; áudio dentro do alvo. O worktree `gestao-pr2` no PC precisa de `git fetch` + checkout da ponta da branch antes de testar.
+- 2026-10-17 — A API do Premiere (via MCP) não aplica LUT `.cube`: aplique manualmente em Lumetri > Creative > Look, ou use o Resolve, onde a API aceita LUT.
+- 2026-10-17 — PowerShell 7 passa argumento vazio (`""`) para comandos nativos e o 5.1 descarta: monte arrays de argumentos (`@pyv`) em vez de `& py $v`.
 - 2026-10-17 — No PC há Python 3.15 e 3.12: faster-whisper/ctranslate2 só funcionam no **3.12**. Scripts com transcrição rodam com `py -3.12`; instalador e agente escolhem o 3.12 automaticamente.
 - 2026-10-17 — Resolve Studio 21.1.1.10 validado via API de scripting (python do venv do davinci-resolve-mcp com RESOLVE_SCRIPT_API/LIB): criar projeto, importar mídia, criar timeline e apagar o projeto temporário funcionam; o Python do agente de saúde é o 3.12.10 e a saúde deu 28/28.
 - 2026-10-17 — Teste da primeira sessão PASSOU: Premiere (MCP premiere-pro via CEP: create_project, import_media, create_sequence_from_clips, split_clip, set_sequence_in_out_points + export_sequence range in_to_out = 3,000 s H.264) e After Effects 26.5 (ae_do: comp.create, keyframe.add, render.start com output "Lossless" .avi = 1 s 1920x1080; o módulo padrão .mp4 precisa do AME).
@@ -42,6 +47,8 @@
 
 ## Decisões em vigor
 - 2026-10-17 — O usuário autorizou o agente a instalar/configurar o que for necessário no PC (MCPs, CLIs) sem pedir a cada vez; continuam exigindo aviso: gastar créditos pagos (> ~US$ 5), publicar, force-push e apagar dados do usuário.
+- 2026-10-17 — No PC, o projeto `gestao` foi isolado pelo usuário: ficam só `magnific-plugins` (rota principal para Premiere/AE/Resolve), `premiere-pro`, `aftereffects`, `davinci-resolve`, `opusclip` e Claude Docs. Filmit, Adobe, Canva, Gmail/Drive/Calendar e os `data:*` estão desativados ali (as outras pastas não mudaram).
+- 2026-10-17 — Para "faz tudo"/lotes, use o `pipeline.py`/`pipeline.ps1` (sem tokens); o Claude entra para revisar o `decisoes.md` e ajustar no app.
 - 2026-10-17 — Prioridade de rota em vídeo: MCP do app aberto > conector cloud > scripts ffmpeg locais. Sempre manter um projeto editável (EDL/XML).
 - ~~2026-10-17 — O agente instala sozinho só atualizações do que já foi aprovado e skills auditadas. MCPs/programas novos só com OK do usuário.~~ (substituída abaixo)
 - 2026-10-17 — A memória local privada fica em `~/.claude/memoria/` e é a fonte da verdade no PC. Esta pasta do repositório guarda só o que pode ser público.

@@ -77,9 +77,50 @@ trabalhe automaticamente em cada pedido: aprimorar o prompt e escolher sozinho d
 
 **Decisão:** o repositório é **público**, então conversas e dados pessoais ficam só em `~/.claude/memoria/` (privado). O repositório guarda apenas a memória pública.
 
+### 6. Sessão local via Remote Control
+- Prompt de continuação salvo em `PROMPT-LOCAL.md`.
+- O usuário ligou `claude remote-control` no PC (DESKTOP-VE4ABKU), e a sessão na nuvem enviou a tarefa para a sessão local.
+- A sessão local instalou tudo e corrigiu bugs reais do Windows:
+  - transcrição com `av`>=17;
+  - CUDA sem cublas;
+  - ffmpeg 9 sem `-filter_complex_script`;
+  - cp1252 em JSON/SRT;
+  - MCP do Resolve: o pacote certo é o samuelgursky via `npx davinci-resolve-mcp setup`;
+  - BOM nos `.ps1`.
+- Ela registrou os aprendizados em `memoria.md` e no histórico `2026-10-17_instalacao-local.md`.
+
+### 7. Ajustes da nuvem após revisar os commits locais
+- Python 3.12 fixado no instalador e no agente.
+- A manutenção parou de reinstalar o pacote PyPI errado do Resolve.
+- Conector **Filmit** (AE/Premiere/Resolve) integrado ao roteamento e à memória.
+- Depois da mesclagem do PR, o agente passa sozinho a seguir a `main`.
+- `instrucoes-claude-ai.md` com o texto para as conversas web consultarem a memória.
+
+### 8. Bateria de testes com os apps abertos em projetos de teste
+- **Passaram:**
+  - Premiere (MCP `premiere-pro` via CEP: projeto, import, sequência, split, in/out, export H.264);
+  - After Effects 26.5 (comp, keyframes, render Lossless; `.mp4` exige o AME);
+  - Resolve Studio 21.1.1.10 (projeto, import, timeline);
+  - Saúde do agente: 28/28;
+  - pipeline decupagem → cor → legendas com fala TTS;
+  - `pipeline.ps1` no Windows (16:05 UTC): reels 1080x1920 com karaokê gravado, 39,7 s → 20 s, −23,7 → −14,4 LUFS; youtube 1920x1080 com SRT separado. Os dois geraram EDL e `grade.cube`.
+- O usuário pediu que **reinícios do Claude** fiquem para **depois de 01:20** (horário local).
+
 ## Pendências abertas
-- [ ] Usuário: revisar e mesclar o PR #1.
-- [ ] Usuário: rodar `instalar-agente.ps1` no Windows, fazer login no `claude` e autorizar os conectores (`/mcp` e o conector Adobe no claude.ai).
-- [ ] Testar no Windows real: winget, Agendador, notificações, detecção de apps e `--transcribe`.
-- [ ] Opcional: ajustar o roteador para não incluir `yt-shorts` em pedidos de exportação ("anima logo no AE e exporta pro Reels").
-- [ ] Opcional: repositório **privado** para sincronizar a memória entre PC e nuvem (`instalar-agente.ps1 -RepoMemoria <url>`).
+**Usuário:**
+- [x] Aprovar os pedidos de permissão pendentes na sessão local (aprovados às 16:03 UTC).
+- [ ] Opcional: escolher uma pasta para o `pipeline.ps1 -Pasta X -Registrar` vigiar.
+- [ ] Filmit: painel Filmit no Premiere/AE → aba MCP → Connect (até agora nenhum app conectado).
+- [ ] `/mcp` no Claude Code local: OpusClip e conector Adobe; autorizar o Adobe for creativity no claude.ai.
+- [ ] Premiere: manter um único painel CEP do MCP rodando. After Effects: abrir sem `-m` e permitir scripts.
+- [ ] Reiniciar o app do Claude e testar o MCP do Resolve. Já está liberado: o usuário está em São Paulo e passou de 01:20. A sessão local tinha agendado para 2026-10-18 01:20, mas pode ser antes.
+- [ ] A sessão local bateu o limite de 5 h às 06:39 UTC (renovou às 07:50 UTC); a lista de tarefas foi reenviada.
+- [ ] Colar `memoria/instrucoes-claude-ai.md` no perfil ou projeto do claude.ai.
+- [x] PR #1 mesclado na `main` (06:34 UTC). Os ajustes seguintes (skill de áudio, fallback de branch, instruções do claude.ai) vão em um PR novo.
+- [ ] Opcional: repositório privado para a memória (`-RepoMemoria`).
+
+**A conferir (sessão local, depois das aprovações):**
+- [ ] Filmit: testes `pr_*`, `dv_*` e AE depois do Connect.
+- [ ] As 3 tarefas agendadas com LastTaskResult = 0.
+- [ ] `~/.claude/memoria/conversas/` recebendo as sessões.
+- [ ] Notificação do Windows e pesquisa semanal com `claude -p` (primeira Descoberta real).

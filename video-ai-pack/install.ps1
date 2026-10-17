@@ -27,7 +27,7 @@ $Pack = $PSScriptRoot
 $ClaudeHome = if ($env:CLAUDE_HOME) { $env:CLAUDE_HOME } else { Join-Path $HOME '.claude' }
 $PackHome = Join-Path $ClaudeHome 'video-ai-pack'
 $OldHookDir = Join-Path $ClaudeHome 'hooks\video-ai-pack'
-$Skills = 'video-orquestrador','video-decupagem','video-colorgrade','video-legendas','video-motion','video-entrega'
+$Skills = 'video-orquestrador','video-decupagem','video-colorgrade','video-legendas','video-motion','video-entrega','video-audio'
 function Say($m) { Write-Host "▸ $m" -ForegroundColor Magenta }
 function Warn($m) { Write-Host "! $m" -ForegroundColor Yellow }
 function Has($c) { [bool](Get-Command $c -ErrorAction SilentlyContinue) }
@@ -37,7 +37,8 @@ function Has($c) { [bool](Get-Command $c -ErrorAction SilentlyContinue) }
 $Py = $null
 foreach ($v in '-3.12', '-3.11', '-3.10', '') {
   if (-not (Get-Command py -ErrorAction SilentlyContinue)) { break }
-  $exe = (& py $v -c "import sys; print(sys.executable)" 2>$null | Select-Object -Last 1)
+  $pyv = @(); if ($v) { $pyv += $v }   # nunca passar argumento vazio (PS 7 o envia como "")
+  $exe = (& py @pyv -c "import sys; print(sys.executable)" 2>$null | Select-Object -Last 1)
   if ($exe -and (Test-Path $exe)) { $Py = $exe; break }
 }
 if (-not $Py -and (Get-Command python -ErrorAction SilentlyContinue)) { $Py = 'python' }

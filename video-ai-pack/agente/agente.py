@@ -37,7 +37,7 @@ CFG_PATH = AGENT_HOME / "config.json"
 STATE = AGENT_HOME / "estado"
 REPORTS = AGENT_HOME / "relatorios"
 LOGS = AGENT_HOME / "logs"
-OWN_SKILLS = ["video-orquestrador", "video-decupagem", "video-colorgrade", "video-legendas", "video-motion", "video-entrega"]
+OWN_SKILLS = ["video-orquestrador", "video-decupagem", "video-colorgrade", "video-legendas", "video-motion", "video-entrega", "video-audio"]
 MCP_NAMES = {"premiere": "premiere-pro", "ae": "aftereffects", "resolve": "davinci-resolve",
              "opusclip": "opusclip", "invideo": "invideo", "higgsfield": "higgsfield"}
 # resolve: samuelgursky via npx (o pacote PyPI "davinci-resolve-mcp" é outro projeto e quebra com mcp 2.x)
@@ -118,13 +118,32 @@ def http_text(url, timeout=20):
 
 
 class Lock:
+    """Uma execução por vez. Tarefas agendadas que se sobrepõem (ex.: Saúde no logon + Manutenção)
+    esperam a outra terminar em vez de falhar: falha com código 1 apareceria como erro no Agendador."""
+    ESPERA_MAX = 45 * 60
+    VENCIDO = 2 * 3600
+
     def __enter__(self):
         AGENT_HOME.mkdir(parents=True, exist_ok=True)
         self.p = AGENT_HOME / "agente.lock"
-        if self.p.exists() and time.time() - self.p.stat().st_mtime < 3 * 3600:
-            sys.exit("outra execução do agente está em andamento (agente.lock)")
-        self.p.write_text(str(os.getpid()))
-        return self
+        inicio = time.time()
+        while True:
+            try:
+                fd = os.open(self.p, os.O_CREAT | os.O_EXCL | os.O_WRONLY)  # criação atômica
+                os.write(fd, str(os.getpid()).encode())
+                os.close(fd)
+                return self
+            except FileExistsError:
+                try:
+                    if time.time() - self.p.stat().st_mtime > self.VENCIDO:  # trava esquecida por queda/desligamento
+                        self.p.unlink(missing_ok=True)
+                        continue
+                except FileNotFoundError:
+                    continue
+                if time.time() - inicio > self.ESPERA_MAX:
+                    log("outra execução do agente segue em andamento há mais de 45 min — esta rodada foi pulada")
+                    sys.exit(0)
+                time.sleep(15)
 
     def __exit__(self, *a):
         self.p.unlink(missing_ok=True)
@@ -240,7 +259,7 @@ def saude(reparar=False):
     hook_ok = "video_intent.py" in json.dumps(settings.get("hooks", {}))
     chk("hook UserPromptSubmit", hook_ok, str(CLAUDE_HOME / "settings.json"), "instalador")
     miss = [s for s in OWN_SKILLS if not (CLAUDE_HOME / "skills" / s / "SKILL.md").exists()]
-    chk("skills do pack", not miss, "faltando: " + ", ".join(miss) if miss else "6/6", "instalador")
+    chk("skills do pack", not miss, "faltando: " + ", ".join(miss) if miss else f"{len(OWN_SKILLS)}/{len(OWN_SKILLS)}", "instalador")
     md = CLAUDE_HOME / "CLAUDE.md"
     chk("regras no CLAUDE.md", md.exists() and "video-ai-pack:start" in md.read_text(encoding="utf-8", errors="replace"),
         str(md), "instalador")
@@ -325,7 +344,16 @@ def manutencao():
     if d and (d.parent / ".git").exists():
         repo = str(d.parent)
         before = run(["git", "-C", repo, "rev-parse", "HEAD"])[1]
-        run(["git", "-C", repo, "fetch", "origin", c["branch"]], timeout=300)
+        rc, _ = run(["git", "-C", repo, "fetch", "origin", c["branch"]], timeout=300)
+        if rc and c["branch"] != "main":
+            # a branch do PR some depois da mesclagem: passa a seguir a main
+            if run(["git", "-C", repo, "fetch", "origin", "main"], timeout=300)[0] == 0 and \
+                    run(["git", "-C", repo, "checkout", "main"], timeout=120)[0] == 0:
+                rep.alert(f"branch '{c['branch']}' não existe mais no GitHub (PR mesclado?) — o agente passou a seguir a main")
+                c["branch"] = "main"
+                cfg_salvo = load_json(CFG_PATH, {})
+                cfg_salvo["branch"] = "main"
+                save_json(CFG_PATH, cfg_salvo)
         rc, out = run(["git", "-C", repo, "merge", "--ff-only", f"origin/{c['branch']}"], timeout=300)
         after = run(["git", "-C", repo, "rev-parse", "HEAD"])[1]
         if rc:

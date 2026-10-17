@@ -91,6 +91,7 @@ Pedidos que não são de vídeo não custam nada.
 | Legendas | `skills/video-legendas` + `legendas.py` | SRT/VTT (42 car., 2 linhas, 17 CPS), ASS karaokê/padrão/minimal, glossário, burn-in |
 | Motion | `skills/video-motion` | Rotas AE/Remotion/Higgsfield, easing, durações, expressões prontas |
 | Entrega | `skills/video-entrega` | Presets por plataforma, loudness e checklist de QA |
+| Áudio | `skills/video-audio` + `audio.py` | Limpeza de voz (ruído medido), loudness por plataforma (−14/−23/−16 LUFS), trilha com ducking |
 | Regras globais | `config/CLAUDE.md.snippet` | Prioridades, segurança da mídia original, limite de gasto |
 | Prompts | `prompts/biblioteca.md` | Modelos prontos para Premiere, Resolve, AE, vertical e legendas |
 | Agente Windows | `agente/` | `instalar-agente.ps1` (instala tudo e agenda), `agente.py`/`agente.ps1` (saúde, manutenção, descoberta), subagente `video-ai-mantenedor` |
@@ -163,6 +164,21 @@ No Claude Code, você pode pedir: *"use o agente video-ai-mantenedor para revisa
 | `-SemPesquisaIA`, `-SemAtualizarSistema`, `-Branch <nome>` | Opções do instalador |
 
 O ajuste fino fica em `%LOCALAPPDATA%\VideoAIAgent\config.json`: `auto_adotar`, `max_adocoes`, `nota_minima`, `min_installs`, `max_tokens_skill`, `retencao_dias` e `notificar`.
+
+### Pipeline com um comando e pasta monitorada (sem gastar tokens)
+```powershell
+cd $env:USERPROFILE\gestao\video-ai-pack\tools
+.\pipeline.ps1 -Video D:\bruto\entrevista.mp4 -Preset reels      # reels | youtube | tv | podcast
+.\pipeline.ps1 -Pasta D:\VideoAI -Registrar -Preset youtube       # vigia D:\VideoAI\entrada a cada 10 min
+.\pipeline.ps1 -Remover                                           # desliga a vigilância
+```
+O pipeline roda decupagem (com transcrição) → cor (look do preset + LUT) → áudio (loudness da plataforma) → 9:16 (reels) → legendas (karaokê gravada no vídeo em reels, SRT nos outros presets).
+O resultado vai para a pasta `ENTREGA/`, com o vídeo final, `cortes.edl`, `grade.cube` e `legendas.srt`, mais um `decisoes.md` explicando cada escolha.
+Na pasta monitorada:
+- `entrada/` recebe os vídeos que você soltar;
+- `saida/` guarda os resultados;
+- `processados/` guarda os originais, que nunca são apagados;
+- `erros/` guarda os vídeos que falharam, com o log.
 
 ### Memória permanente (todas as conversas e agentes consultam)
 O instalador cria `~/.claude/memoria/` e faz **toda** sessão do Claude Code ler esses arquivos (import no `~/.claude/CLAUDE.md`).

@@ -7,6 +7,7 @@ Use para responder "qual skill faz X?" e para não recriar o que já existe. Bus
 
 | Skill | Para quê |
 |---|---|
+| `video-audio` | Áudio de vídeo: limpeza de voz/ruído, loudness por plataforma (web -14, TV -23, podcast -16 LUFS), trilha com ducking e mix final. |
 | `video-colorgrade` | Correção de cor e colorgrade: exposição, balanço de branco, LOG→Rec.709, looks e LUT .cube para Premiere/Resolve. |
 | `video-decupagem` | Decupagem e rough cut automáticos: silêncios, fillers, retakes, melhores takes, log com timecode e EDL para Premiere/Resolve. |
 | `video-entrega` | Exportação por plataforma e checklist de QA final de vídeo (codec, loudness, legendas, projeto editável). |

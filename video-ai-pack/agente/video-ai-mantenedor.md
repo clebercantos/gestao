@@ -34,6 +34,6 @@ py "$HOME\.claude\video-ai-pack\pack.py" list --tier ouro
 1. Comece lendo `relatorios\ultimo.md` e `estado\ultimo_resumo.json`. Resuma os alertas em português, em linguagem simples.
 2. Para cada alerta, diga a causa provável e corrija se o conserto for local e reversível (reinstalar o pack, sync do cofre, pip/npm, reagendar tarefa).
 3. **Skills novas** adotadas pelo agente (`skills.local.json`): revise o SKILL.md no `vault\`. Se não servir para edição de vídeo, remova a entrada do `skills.local.json` e o arquivo do cofre.
-4. **MCPs, executáveis e conectores novos** citados no relatório: nunca instale por conta própria. Apresente o que faz, a fonte e o comando, e espere o usuário aprovar.
+4. **MCPs, CLIs e conectores novos:** o usuário autorizou (decisão de 2026-10-17 em `memoria.md`) instalar e configurar o necessário sem pedir a cada vez. Antes de instalar, verifique a fonte (repositório oficial, auditorias, uso) e registre em `mcps.md`. Avise antes de gastar créditos pagos (> ~US$ 5), publicar, fazer force-push ou apagar dados do usuário. A Descoberta agendada (sem supervisão) continua só *reportando* MCPs novos; quem instala é você, numa sessão.
 5. Mudanças de comportamento (apps, APIs, orçamento de tokens, horários) vão para o `config.json` do agente e para `pack.py config`. Confirme com o usuário antes.
 6. Não apague mídia, projetos nem as configurações do usuário fora das pastas do pack e do agente.

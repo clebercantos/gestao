@@ -117,7 +117,8 @@ def gerar(dest, repo, claude_home, scan):
          "| Rotina | Quando | Faz |", "|---|---|---|",
          "| Saude | logon +5 min e a cada 6 h | confere 20 itens e repara sozinho |",
          "| Manutencao | diária 03:17 | atualiza pack/cofre/pacotes/sistema, regenera estes MDs, sincroniza memória privada |",
-         "| Descoberta | segunda 09:13 | monitora skills/MCPs/releases + pesquisa web via `claude -p`; adota até 3 skills auditadas |", "",
+         "| Descoberta | segunda 09:13 | monitora skills/MCPs/releases + pesquisa web via `claude -p`; adota até 3 skills auditadas |",
+         "| Pipeline (opcional) | a cada 10 min, se registrado com `pipeline.ps1 -Registrar` | processa vídeos soltos na pasta `entrada` e gera ENTREGA |", "",
          "- Código: `video-ai-pack/agente/` (`agente.py`, `agente.ps1`, `instalar-agente.ps1`)",
          "- Dados: `%LOCALAPPDATA%\\VideoAIAgent\\` (`config.json`, `relatorios\\ultimo.md`, `logs\\`, `estado\\`)",
          "- Manual: `powershell -File agente.ps1 -Modo status|saude|manutencao|descoberta|tudo`", "",
@@ -151,7 +152,8 @@ def gerar(dest, repo, claude_home, scan):
          "| `skills.md` | todas as skills: pack, instaladas, conta Claude, top-100, adotadas | agente (diário) |",
          "| `mcps.md` | MCPs registrados, conectores claude.ai, MCPs do pack e alternativas | agente (diário) |",
          "| `agentes.md` | agentes, subagentes, hooks e automações | agente (diário) |",
-         "| `historico/` | resumos curados das conversas importantes | Claude |"]
+         "| `historico/` | resumos curados das conversas importantes | Claude |",
+         "| `instrucoes-claude-ai.md` | texto para colar no claude.ai (perfil/projeto) para as conversas web lerem esta memória | Claude |"]
     if privado:
         I.append("| `conversas/` | resumo automático de **toda** sessão Claude Code deste PC (privado) | hook SessionEnd |")
     I += ["", "Regras: veja `memoria.md`. Correção do usuário → registrar em `memoria.md` na hora, com data."]
@@ -161,6 +163,8 @@ def gerar(dest, repo, claude_home, scan):
         if not (dest / "memoria.md").exists() and (seed / "memoria.md").exists():
             shutil.copy2(seed / "memoria.md", dest / "memoria.md")
         (dest / "historico").mkdir(exist_ok=True)
+        if (seed / "instrucoes-claude-ai.md").exists():
+            shutil.copy2(seed / "instrucoes-claude-ai.md", dest / "instrucoes-claude-ai.md")
         for h in (seed / "historico").glob("*.md"):
             if not (dest / "historico" / h.name).exists():
                 shutil.copy2(h, dest / "historico" / h.name)

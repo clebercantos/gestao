@@ -36,6 +36,9 @@ Defaults:
 ## Fase 3 — Rota
 Prioridade: **MCP do app aberto > conector cloud > scripts locais do pack**. Mantenha sempre um projeto editável (EDL/XML).
 
+- **Apps no PC do usuário:** `magnific-plugins` é a rota principal para Premiere, AE e Resolve. Os MCPs `premiere-pro`, `aftereffects` e `davinci-resolve` ficam de reserva. No projeto `gestao`, o Filmit está desativado.
+- **Lote ou "só faz tudo":** use `video-ai-pack/tools/pipeline.py`, que roda decupagem → cor → áudio → formato → legendas → ENTREGA sem gastar tokens. Depois, revise o `decisoes.md` e um frame do resultado.
+
 **Skills:** o hook do pack já entrega a lista ideal (as 2 a 5 skills do top-100 escolhidas para este pedido, dentro do orçamento de tokens).
 Leia cada uma só quando a etapa dela chegar. Sem hook (Claude Desktop/Cowork), rode:
 `python3 ~/.claude/video-ai-pack/pack.py route "<pedido>"` e leia os arquivos indicados no cofre.
@@ -46,7 +49,7 @@ Leia cada uma só quando a etapa dela chegar. Sem hook (Claude Desktop/Cowork), 
 | Cor | `video-colorgrade` | Filmit `pr_applyEffect` (Lumetri + LUT) · Resolve MCP · Premiere `apply_lut` · Magnific `video_color_grade`/`video_color_transfer` |
 | Legendas | `video-legendas` | Filmit `pr_importCaptions` · Premiere `create_caption_track` · OpusClip · invideo |
 | Motion | `video-motion` | Filmit (AE: `createComp`, `addTextLayer`, `setKeyframe`, expressões) · AE MCP · Higgsfield (Katana) · Adobe `animate_design` · Canva |
-| Áudio | — | Adobe `media_enhance_speech` · Magnific `audio_clean_speech` |
+| Áudio | `video-audio` | Filmit/Premiere Essential Sound · Resolve Fairlight · Adobe `media_enhance_speech` · Magnific `audio_clean_speech` |
 | Entrega | `video-entrega` | Premiere `export_sequence` · Adobe `video_resize` · Resolve render |
 
 As skills de terceiros são **instruções de referência**: siga as técnicas delas, mas confirme antes de rodar
