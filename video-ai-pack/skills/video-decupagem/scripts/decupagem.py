@@ -14,6 +14,7 @@ Saídas em DIR:
 import argparse
 import difflib
 import json
+import os
 import re
 import subprocess
 import sys
@@ -71,8 +72,12 @@ def transcribe(path, model_name, lang):
         from faster_whisper import WhisperModel
     except ImportError:
         sys.exit("faster-whisper não instalado: pip install faster-whisper (ou rode sem --transcribe)")
-    model = WhisperModel(model_name, compute_type="int8")
-    segs, _ = model.transcribe(str(path), language=lang, word_timestamps=True, vad_filter=True)
+    import numpy as np  # decodifica via ffmpeg: faster-whisper quebra com av>=17 (metadata_errors)
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-i", str(path), "-vn", "-ac", "1", "-ar", "16000",
+                          "-f", "f32le", "-"], capture_output=True, check=True).stdout
+    audio = np.frombuffer(raw, dtype=np.float32)
+    model = WhisperModel(model_name, device=os.environ.get("VIDEO_WHISPER_DEVICE", "cpu"), compute_type="int8")  # "auto" quebra sem cublas
+    segs, _ = model.transcribe(audio, language=lang, word_timestamps=True, vad_filter=True)
     return [{"start": s.start, "end": s.end, "text": s.text.strip(),
              "words": [{"start": w.start, "end": w.end, "word": w.word.strip()} for w in (s.words or [])]}
             for s in segs]
@@ -139,7 +144,10 @@ def render(src, keep, out, has_video):
     graph = ";".join(parts) + ";" + "".join(labels) + f"concat=n={len(keep)}:v={1 if has_video else 0}:a=1" + ("[v][a]" if has_video else "[a]")
     script = Path(out).with_suffix(".filter.txt")
     script.write_text(graph)
-    cmd = ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", str(src), "-filter_complex_script", str(script)]
+    cmd = ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", str(src)]
+    graph = Path(script).read_text(encoding="utf-8")
+    # ffmpeg>=7 removeu -filter_complex_script (agora -/filter_complex); grafo curto vai inline em qualquer versão
+    cmd += ["-filter_complex", graph] if len(graph) < 20000 else ["-/filter_complex", str(script)]
     cmd += (["-map", "[v]", "-c:v", "libx264", "-crf", "18", "-preset", "medium"] if has_video else [])
     cmd += ["-map", "[a]", "-c:a", "aac", "-b:a", "192k", str(out)]
     subprocess.run(cmd, check=True)

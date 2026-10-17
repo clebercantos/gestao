@@ -1,4 +1,4 @@
-# Video AI Agent — execução no Windows (chamado pelo Agendador de Tarefas)
+﻿# Video AI Agent — execução no Windows (chamado pelo Agendador de Tarefas)
 #   agente.ps1 -Modo saude|manutencao|descoberta|memoria|tudo|status
 param([ValidateSet('saude', 'manutencao', 'descoberta', 'memoria', 'tudo', 'status')][string]$Modo = 'saude')
 $ErrorActionPreference = 'Continue'

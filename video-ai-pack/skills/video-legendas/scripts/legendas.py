@@ -11,6 +11,7 @@ Uso:
 """
 import argparse
 import json
+import os
 import re
 import subprocess
 from pathlib import Path
@@ -27,8 +28,12 @@ def probe_size(path):
 
 def transcribe(path, model_name, lang):
     from faster_whisper import WhisperModel
-    model = WhisperModel(model_name, compute_type="int8")
-    segs, _ = model.transcribe(str(path), language=lang, word_timestamps=True, vad_filter=True)
+    import numpy as np  # decodifica via ffmpeg: faster-whisper quebra com av>=17 (metadata_errors)
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-i", str(path), "-vn", "-ac", "1", "-ar", "16000",
+                          "-f", "f32le", "-"], capture_output=True, check=True).stdout
+    audio = np.frombuffer(raw, dtype=np.float32)
+    model = WhisperModel(model_name, device=os.environ.get("VIDEO_WHISPER_DEVICE", "cpu"), compute_type="int8")  # "auto" quebra sem cublas
+    segs, _ = model.transcribe(audio, language=lang, word_timestamps=True, vad_filter=True)
     return [{"start": s.start, "end": s.end, "text": s.text.strip(),
              "words": [{"start": w.start, "end": w.end, "word": w.word.strip()} for w in (s.words or [])]}
             for s in segs]

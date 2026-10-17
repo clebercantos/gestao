@@ -1,4 +1,4 @@
-# Video AI Pack — instalador Windows (PowerShell 5.1+ / 7)
+﻿# Video AI Pack — instalador Windows (PowerShell 5.1+ / 7)
 #
 #   .\install.ps1                          # skills + hook automático + CLAUDE.md + deps Python
 #   .\install.ps1 -Mcp all                 # + MCPs (premiere, ae, resolve, opusclip, invideo, higgsfield)

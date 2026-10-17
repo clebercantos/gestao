@@ -18,6 +18,11 @@
 - (nenhuma ainda; registre aqui toda vez que o usuário disser que algo estava errado)
 
 ## Aprendizados técnicos (verificados)
+
+- 2026-10-17 — faster-whisper 1.2.1 quebra com `av`>=17 (`metadata_errors`) quando auto-editor atualiza o av: decodificar o áudio com ffmpeg (numpy f32le 16k) e passar o array. Corrigido em decupagem.py e legendas.py.
+- 2026-10-17 — WhisperModel device "auto" escolhe CUDA e falha sem `cublas64_12.dll`: padrão agora é CPU (env VIDEO_WHISPER_DEVICE=cuda para GPU).
+- 2026-10-17 — ffmpeg 9 removeu `-filter_complex_script`: usar `-filter_complex` inline (ou `-/filter_complex arquivo`). Corrigido em decupagem.py (--render).
+- 2026-10-17 — PowerShell 5.1 precisa de BOM nos .ps1 com acentos; os 3 instaladores agora têm BOM.
 - 2026-10-17 — Instalar muitas skills custa tokens fixos em toda sessão (só as descrições de 100 skills ≈ 10,2k tokens) e faz os gatilhos competirem. A solução adotada foi um cofre + roteador que carrega de 2 a 5 skills por pedido.
 - 2026-10-17 — Os números de instalação no skills.sh são inflados por packs (HyperFrames, inference.sh, RunComfy) e por espelhos/clones. É preciso deduplicar e ponderar.
 - 2026-10-17 — "caption" em skills costuma ser texto de post de rede social, não legenda de vídeo. Para legenda, exija contexto de vídeo, SRT ou transcrição.

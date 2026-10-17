@@ -1,4 +1,4 @@
-# Video AI Agent — instalação completa no Windows (Windows 10/11, PowerShell 5.1+)
+﻿# Video AI Agent — instalação completa no Windows (Windows 10/11, PowerShell 5.1+)
 #
 # Instala os pré-requisitos (Git, Python, Node, FFmpeg, Claude Code), o Video AI Pack, os MCPs e o
 # agente de manutenção, e agenda as rotinas no Agendador de Tarefas. Não precisa de administrador.
