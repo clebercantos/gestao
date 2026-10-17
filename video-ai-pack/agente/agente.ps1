@@ -7,8 +7,15 @@ $env:PYTHONUTF8 = '1'
 $env:Path = [Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' + [Environment]::GetEnvironmentVariable('Path', 'User') + ';' + (Join-Path $HOME '.local\bin')
 
 $AgentHome = Join-Path $env:LOCALAPPDATA 'VideoAIAgent'
-# 'py' primeiro: 'python' pode ser o atalho da Microsoft Store
-$Py = if (Get-Command py -ErrorAction SilentlyContinue) { 'py' } elseif (Get-Command python -ErrorAction SilentlyContinue) { 'python' } else { $null }
+# Python 3.12 primeiro: faster-whisper/ctranslate2 não têm pacotes para 3.13+ (3.15 quebra a transcrição).
+# Usa o caminho real do executável; 'python' puro pode ser o atalho da Microsoft Store.
+$Py = $null
+foreach ($v in '-3.12', '-3.11', '-3.10', '') {
+  if (-not (Get-Command py -ErrorAction SilentlyContinue)) { break }
+  $exe = (& py $v -c "import sys; print(sys.executable)" 2>$null | Select-Object -Last 1)
+  if ($exe -and (Test-Path $exe)) { $Py = $exe; break }
+}
+if (-not $Py -and (Get-Command python -ErrorAction SilentlyContinue)) { $Py = 'python' }
 if (-not $Py) { Write-Error 'Python não encontrado'; exit 1 }
 
 $pyArgs = @((Join-Path $PSScriptRoot 'agente.py'), $Modo)

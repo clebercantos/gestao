@@ -30,7 +30,8 @@ Defaults:
 
 ## Fase 2 — Inventário
 - **Mídia:** `ffprobe` (resolução, fps, codec, `color_transfer`, áudio).
-- **Ferramentas:** são deferidas, então busque com `ToolSearch` antes de concluir que não existem: `premiere`, `aftereffects`, `resolve`, `Adobe video`, `Magnific video`, `opusclip`, `invideo`, `higgsfield`, `Canva`.
+- **Ferramentas:** são deferidas, então busque com `ToolSearch` antes de concluir que não existem: `filmit`, `premiere`, `aftereffects`, `resolve`, `Adobe video`, `Magnific video`, `opusclip`, `invideo`, `higgsfield`, `Canva`.
+  Rode `filmit_status` para ver quais apps estão conectados ao Filmit agora.
 
 ## Fase 3 — Rota
 Prioridade: **MCP do app aberto > conector cloud > scripts locais do pack**. Mantenha sempre um projeto editável (EDL/XML).
@@ -41,10 +42,10 @@ Leia cada uma só quando a etapa dela chegar. Sem hook (Claude Desktop/Cowork), 
 
 | Etapa | Skills do pack (sempre) | Conectores/MCPs (se ativos) |
 |---|---|---|
-| Decupagem | `video-decupagem` | Premiere/Resolve MCP · Adobe `video_create_quick_cut` · Magnific `video_magic_cut` · OpusClip |
-| Cor | `video-colorgrade` | Resolve MCP · Premiere `apply_lut` · Magnific `video_color_grade`/`video_color_transfer` |
-| Legendas | `video-legendas` | Premiere `create_caption_track` · OpusClip · invideo |
-| Motion | `video-motion` | AE MCP · Higgsfield (Katana) · Adobe `animate_design` · Canva |
+| Decupagem | `video-decupagem` | Filmit `pr_*`/`dv_*` (+ `ed_*` silêncios/fillers, `rc_*` paper edit) · Premiere/Resolve MCP · Adobe `video_create_quick_cut` · Magnific `video_magic_cut` · OpusClip |
+| Cor | `video-colorgrade` | Filmit `pr_applyEffect` (Lumetri + LUT) · Resolve MCP · Premiere `apply_lut` · Magnific `video_color_grade`/`video_color_transfer` |
+| Legendas | `video-legendas` | Filmit `pr_importCaptions` · Premiere `create_caption_track` · OpusClip · invideo |
+| Motion | `video-motion` | Filmit (AE: `createComp`, `addTextLayer`, `setKeyframe`, expressões) · AE MCP · Higgsfield (Katana) · Adobe `animate_design` · Canva |
 | Áudio | — | Adobe `media_enhance_speech` · Magnific `audio_clean_speech` |
 | Entrega | `video-entrega` | Premiere `export_sequence` · Adobe `video_resize` · Resolve render |
 

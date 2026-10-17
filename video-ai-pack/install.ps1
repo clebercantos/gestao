@@ -32,8 +32,16 @@ function Say($m) { Write-Host "▸ $m" -ForegroundColor Magenta }
 function Warn($m) { Write-Host "! $m" -ForegroundColor Yellow }
 function Has($c) { [bool](Get-Command $c -ErrorAction SilentlyContinue) }
 
-# 'py' primeiro: 'python' pode ser o atalho da Microsoft Store
-$Py = if (Has 'py') { 'py' } elseif (Has 'python') { 'python' } else { throw 'Python 3.9+ é obrigatório' }
+# Python 3.12 primeiro: faster-whisper/ctranslate2 não têm pacotes para 3.13+ (3.15 quebra a transcrição).
+# Usa o caminho real do executável; 'python' puro pode ser o atalho da Microsoft Store.
+$Py = $null
+foreach ($v in '-3.12', '-3.11', '-3.10', '') {
+  if (-not (Get-Command py -ErrorAction SilentlyContinue)) { break }
+  $exe = (& py $v -c "import sys; print(sys.executable)" 2>$null | Select-Object -Last 1)
+  if ($exe -and (Test-Path $exe)) { $Py = $exe; break }
+}
+if (-not $Py -and (Get-Command python -ErrorAction SilentlyContinue)) { $Py = 'python' }
+if (-not $Py) { throw 'Python 3.10–3.12 é obrigatório (winget install Python.Python.3.12)' }
 $SettingsPath = Join-Path $ClaudeHome 'settings.json'
 
 # UTF-8 sem BOM: o Set-Content -Encoding UTF8 do PowerShell 5.1 grava BOM, que quebra parsers JSON
@@ -54,7 +62,7 @@ function Set-Hook([bool]$add) {
     if ($add) {
       foreach ($sc in $scripts) {
         $timeout = if ($event -eq 'SessionEnd') { 30 } else { 10 }
-        $groups += [pscustomobject]@{ hooks = @([pscustomobject]@{ type = 'command'; command = "$Py `"$(Join-Path $PackHome $sc)`""; timeout = $timeout }) }
+        $groups += [pscustomobject]@{ hooks = @([pscustomobject]@{ type = 'command'; command = "`"$Py`" `"$(Join-Path $PackHome $sc)`""; timeout = $timeout }) }
       }
     }
     $s.hooks.PSObject.Properties.Remove($event)

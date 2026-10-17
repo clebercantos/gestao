@@ -40,8 +40,9 @@ LOGS = AGENT_HOME / "logs"
 OWN_SKILLS = ["video-orquestrador", "video-decupagem", "video-colorgrade", "video-legendas", "video-motion", "video-entrega"]
 MCP_NAMES = {"premiere": "premiere-pro", "ae": "aftereffects", "resolve": "davinci-resolve",
              "opusclip": "opusclip", "invideo": "invideo", "higgsfield": "higgsfield"}
-NPM_PKGS = {"premiere": "premiere-pro-mcp", "ae": "@kumoproductions/mcp-aftereffects"}
-PYPI_PKGS = {"resolve": "davinci-resolve-mcp"}
+# resolve: samuelgursky via npx (o pacote PyPI "davinci-resolve-mcp" é outro projeto e quebra com mcp 2.x)
+NPM_PKGS = {"premiere": "premiere-pro-mcp", "ae": "@kumoproductions/mcp-aftereffects", "resolve": "davinci-resolve-mcp"}
+PYPI_PKGS = {}
 GH_REPOS = ["leancoderkavy/premiere-pro-mcp", "kumoproductions/mcp-aftereffects", "samuelgursky/davinci-resolve-mcp",
             "remotion-dev/skills", "heygen-com/hyperframes", "WyattBlue/auto-editor", "browser-use/video-use"]
 WINGET_IDS = ["Gyan.FFmpeg", "OpenJS.NodeJS.LTS", "Git.Git", "Python.Python.3.12"]
@@ -228,7 +229,9 @@ def saude(reparar=False):
         out = run([t, "-version" if t.startswith("ff") else "--version"], timeout=60)[1] if path else ""
         ver = out.splitlines()[0][:70] if out else ""
         chk(f"ferramenta {t}", bool(path), ver or "não encontrado — rode instalar-agente.ps1")
-    chk("python", True, sys.version.split()[0])
+    # o teste real é o import do faster_whisper abaixo; aqui só orienta (3.15 não tem wheels do ctranslate2/av)
+    chk("python", True, sys.version.split()[0] + ("" if sys.version_info < (3, 14) else
+        " — se a transcrição falhar, use 3.12: winget install Python.Python.3.12"))
     for f in ("pack.py", "skills.json", "video_intent.py"):
         chk(f"pack: {f}", (PACK_HOME / f).exists(), str(PACK_HOME / f), "instalador")
     n = len(list((PACK_HOME / "vault").glob("*.md"))) if (PACK_HOME / "vault").exists() else 0
@@ -350,6 +353,8 @@ def manutencao():
                 if m == "premiere":
                     rc2, _ = run(["npx", "-y", f"{pkg}@{ver}", "--install-cep"], timeout=900)
                     rep.add(f"  - painel CEP do Premiere atualizado: {'ok' if rc2 == 0 else 'falhou'}")
+                elif m == "resolve" and st.get(pkg):
+                    rep.alert(f"MCP do Resolve tem versão nova ({ver}): rode `npx -y davinci-resolve-mcp setup` com o Resolve fechado")
                 st[pkg] = ver
     if c["atualizar_sistema"]:
         if WIN and which("winget"):

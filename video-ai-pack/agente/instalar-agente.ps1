@@ -63,6 +63,12 @@ $deps = @(
   @{ cmd = 'node'; id = 'OpenJS.NodeJS.LTS' },
   @{ cmd = 'ffmpeg'; id = 'Gyan.FFmpeg' }
 )
+# Python 3.12 é obrigatório mesmo com outra versão instalada (faster-whisper não suporta 3.13+)
+if ((Has 'py') -and -not (& py -3.12 -c "print(1)" 2>$null)) {
+  Say 'Instalando Python 3.12 (necessário para a transcrição)'
+  winget install --id Python.Python.3.12 --exact --silent --accept-package-agreements --accept-source-agreements --disable-interactivity
+  Refresh-Path
+}
 foreach ($d in $deps) {
   if (Has $d.cmd) { Say "$($d.cmd) ok"; continue }
   Say "Instalando $($d.id)"
