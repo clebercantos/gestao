@@ -1,6 +1,6 @@
 ---
 name: video-entrega
-description: Exportação, render, versões por plataforma (YouTube, Reels, TikTok, Shorts, LinkedIn, TV) e checklist de QA final de vídeo — codecs, loudness, resolução, legendas, arquivos de projeto. Use para "exportar", "renderizar", "versão vertical", "formato para Instagram", "entregar", "checar antes de publicar".
+description: "Exportação por plataforma e checklist de QA final de vídeo (codec, loudness, legendas, projeto editável)."
 ---
 
 # Entrega e QA

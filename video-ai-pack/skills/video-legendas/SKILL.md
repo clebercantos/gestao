@@ -1,6 +1,6 @@
 ---
 name: video-legendas
-description: Legendas e captions automáticas — transcrição PT-BR/multi-idioma, SRT/VTT com regras profissionais (42 caracteres, 2 linhas, 17 CPS), estilos padrão, karaokê/Hormozi palavra-a-palavra e minimal, glossário de nomes próprios, burn-in e faixa de legenda no Premiere. Use para "legendar", "legenda", "caption", "SRT", "transcrever", "legenda animada", "estilo Hormozi".
+description: "Legendas automáticas: transcrição, SRT/VTT profissional, estilos karaokê/Hormozi/minimal, glossário e burn-in."
 ---
 
 # Legendas automáticas

@@ -1,6 +1,6 @@
 ---
 name: video-colorgrade
-description: Correção de cor e colorgrade automáticos — análise de exposição, níveis, balanço de branco, conversão LOG→Rec.709, looks (cinematic, quente, frio, P&B, vintage), shot match e exportação de LUT .cube para Premiere/Lumetri e DaVinci Resolve. Use para "colorgrade", "corrigir cor", "LUT", "look cinematográfico", "deixar mais quente", "igualar câmeras", "material em log".
+description: "Correção de cor e colorgrade: exposição, balanço de branco, LOG→Rec.709, looks e LUT .cube para Premiere/Resolve."
 ---
 
 # Colorgrade automático

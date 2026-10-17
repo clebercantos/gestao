@@ -1,6 +1,6 @@
 ---
 name: video-decupagem
-description: Decupagem e rough cut automáticos — transcrição, log de takes com timecode, remoção de silêncios, filler words e retakes, seleção de melhores momentos/highlights e geração de EDL para Premiere/Resolve. Use para "decupar", "cortar silêncios", "jump cut", "tirar os erros", "selecionar os melhores takes", "fazer highlights", "rough cut", "corte seco".
+description: "Decupagem e rough cut automáticos: silêncios, fillers, retakes, melhores takes, log com timecode e EDL para Premiere/Resolve."
 ---
 
 # Decupagem automática

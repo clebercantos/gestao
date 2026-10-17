@@ -1,6 +1,6 @@
 ---
 name: video-motion
-description: Motion design para vídeo — títulos, lower thirds, kinetic typography, logo reveal, transições, call-to-action e animações de dados no After Effects (via MCP/ExtendScript), Remotion ou conectores (Higgsfield Katana, Adobe Express animate, Canva). Use para "animar", "motion", "After Effects", "lower third", "vinheta", "intro/outro", "texto animado", "transição", "expressão do AE", "Remotion".
+description: "Motion design: títulos, lower thirds, logo e transições via After Effects MCP, Remotion ou Higgsfield."
 ---
 
 # Motion design

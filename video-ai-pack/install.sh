@@ -4,7 +4,10 @@
 #   ./install.sh                       # skills + hook automático + CLAUDE.md + deps Python
 #   ./install.sh --mcp all             # + todos os MCPs (Premiere, AE, Resolve, OpusClip, invideo, Higgsfield)
 #   ./install.sh --mcp premiere,ae     # só os MCPs escolhidos
-#   ./install.sh --community           # + skills da comunidade (Remotion, auto-editor, motion-design LobzyJay)
+#   ./install.sh --apps premiere,resolve,aftereffects --apis elevenlabs   # apps/APIs que você usa (roteador)
+#   ./install.sh --budget 7000         # orçamento de tokens por pedido de vídeo (padrão 7000)
+#   ./install.sh --no-sync             # não baixa o cofre das 100 skills agora
+#   ./install.sh --community           # + instala de verdade as skills completas mais usadas (Remotion, auto-editor, LobzyJay)
 #   ./install.sh --uninstall
 #
 # Variáveis: CLAUDE_HOME (padrão ~/.claude), SKIP_PIP=1 para não instalar pacotes Python.
@@ -12,18 +15,23 @@ set -euo pipefail
 
 PACK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_HOME="${CLAUDE_HOME:-$HOME/.claude}"
-HOOK_DIR="$CLAUDE_HOME/hooks/video-ai-pack"
+PACK_HOME="$CLAUDE_HOME/video-ai-pack"
+OLD_HOOK_DIR="$CLAUDE_HOME/hooks/video-ai-pack"
 SKILLS=(video-orquestrador video-decupagem video-colorgrade video-legendas video-motion video-entrega)
 MCP_LIST=""
 COMMUNITY=0
 UNINSTALL=0
+SYNC=1
+CFG_ARGS=()
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --mcp) MCP_LIST="$2"; shift 2 ;;
     --community) COMMUNITY=1; shift ;;
     --uninstall) UNINSTALL=1; shift ;;
-    -h|--help) sed -n '2,12p' "$0"; exit 0 ;;
+    --no-sync) SYNC=0; shift ;;
+    --apps|--apis|--budget) CFG_ARGS+=("$1" "$2"); shift 2 ;;
+    -h|--help) sed -n '2,16p' "$0"; exit 0 ;;
     *) echo "opção desconhecida: $1" >&2; exit 1 ;;
   esac
 done
@@ -36,7 +44,7 @@ PY=python3; has python3 || PY=python
 has "$PY" || { echo "Python 3.9+ é obrigatório" >&2; exit 1; }
 
 settings_hook() {  # $1 = add|remove
-  "$PY" - "$CLAUDE_HOME/settings.json" "$HOOK_DIR/video_intent.py" "$1" "$PY" <<'EOF'
+  "$PY" - "$CLAUDE_HOME/settings.json" "$PACK_HOME/video_intent.py" "$1" "$PY" <<'EOF'
 import json, sys, pathlib
 path, script, mode, py = pathlib.Path(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4]
 data = json.loads(path.read_text()) if path.exists() and path.read_text().strip() else {}
@@ -72,7 +80,7 @@ EOF
 if [[ $UNINSTALL == 1 ]]; then
   say "Removendo Video AI Pack de $CLAUDE_HOME"
   for s in "${SKILLS[@]}"; do rm -rf "$CLAUDE_HOME/skills/$s"; done
-  rm -rf "$HOOK_DIR"
+  rm -rf "$PACK_HOME" "$OLD_HOOK_DIR"
   settings_hook remove
   claude_md remove
   if has claude; then
@@ -105,11 +113,18 @@ for s in "${SKILLS[@]}"; do
 done
 find "$CLAUDE_HOME/skills" -path '*video-*/scripts/*.py' -exec chmod +x {} +
 
-# 3. Hook de roteamento automático + aprimoramento de prompt
-say "Registrando hook UserPromptSubmit (detecção automática de pedidos de vídeo)"
-mkdir -p "$HOOK_DIR"
-cp "$PACK_DIR/hooks/video_intent.py" "$HOOK_DIR/"
-chmod +x "$HOOK_DIR/video_intent.py"
+# 3. Roteador + catálogo top-100 + hook automático
+say "Instalando roteador e catálogo das 100 skills em $PACK_HOME"
+rm -rf "$OLD_HOOK_DIR"
+mkdir -p "$PACK_HOME"
+cp "$PACK_DIR/tools/pack.py" "$PACK_DIR/hooks/video_intent.py" "$PACK_DIR/catalogo/skills.json" "$PACK_HOME/"
+chmod +x "$PACK_HOME/pack.py" "$PACK_HOME/video_intent.py"
+[[ ${#CFG_ARGS[@]} -gt 0 ]] && "$PY" "$PACK_HOME/pack.py" config "${CFG_ARGS[@]}" >/dev/null
+if [[ $SYNC == 1 ]]; then
+  say "Baixando o cofre (SKILL.md das 100 skills, ~1 MB — fora de ~/.claude/skills, custo fixo zero)"
+  "$PY" "$PACK_HOME/pack.py" sync || warn "sync falhou — rode depois: $PY $PACK_HOME/pack.py sync"
+fi
+say "Registrando hook UserPromptSubmit (roteamento automático por pedido)"
 settings_hook add
 
 # 4. Instruções globais
@@ -147,12 +162,12 @@ if [[ -n "$MCP_LIST" ]] && has claude; then
   say "MCPs remotos pedem login OAuth: abra o Claude Code e rode /mcp"
 fi
 
-# 6. Skills da comunidade
+# 6. Skills completas (com scripts/references) das mais usadas — o resto fica no cofre, sob demanda
 if [[ $COMMUNITY == 1 ]]; then
-  say "Instalando skills da comunidade"
+  say "Instalando skills completas da comunidade"
   if has npx; then
-    npx -y skills add remotion-dev/skills || warn "remotion skills falharam"
-    npx -y skills add WyattBlue/auto-editor || warn "auto-editor skill falhou"
+    npx -y skills add https://github.com/remotion-dev/skills || warn "remotion skills falharam"
+    npx -y skills add https://github.com/WyattBlue/auto-editor || warn "auto-editor skill falhou"
   fi
   if has git; then
     tmp="$(mktemp -d)"
@@ -163,5 +178,6 @@ if [[ $COMMUNITY == 1 ]]; then
   fi
 fi
 
+"$PY" "$PACK_HOME/pack.py" stats || true
 say "Video AI Pack instalado. Reinicie o Claude Code e teste:"
 echo '   "decupa o video.mp4, colorgrade cinematic e legenda karaokê pra Reels"'

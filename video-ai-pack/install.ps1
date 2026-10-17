@@ -3,18 +3,25 @@
 #   .\install.ps1                          # skills + hook automático + CLAUDE.md + deps Python
 #   .\install.ps1 -Mcp all                 # + MCPs (premiere, ae, resolve, opusclip, invideo, higgsfield)
 #   .\install.ps1 -Mcp premiere,ae         # só os escolhidos
-#   .\install.ps1 -Community               # + skills Remotion, auto-editor, motion-design (LobzyJay)
+#   .\install.ps1 -Apps premiere,resolve -Apis elevenlabs -Budget 7000   # o que você usa (roteador)
+#   .\install.ps1 -NoSync                  # não baixa o cofre das 100 skills agora
+#   .\install.ps1 -Community               # + skills completas Remotion, auto-editor, motion-design (LobzyJay)
 #   .\install.ps1 -Uninstall
 param(
   [string[]]$Mcp = @(),
   [switch]$Community,
   [switch]$Uninstall,
-  [switch]$SkipPip
+  [switch]$SkipPip,
+  [switch]$NoSync,
+  [string[]]$Apps = @(),
+  [string[]]$Apis = @(),
+  [int]$Budget = 0
 )
 $ErrorActionPreference = 'Stop'
 $Pack = $PSScriptRoot
 $ClaudeHome = if ($env:CLAUDE_HOME) { $env:CLAUDE_HOME } else { Join-Path $HOME '.claude' }
-$HookDir = Join-Path $ClaudeHome 'hooks\video-ai-pack'
+$PackHome = Join-Path $ClaudeHome 'video-ai-pack'
+$OldHookDir = Join-Path $ClaudeHome 'hooks\video-ai-pack'
 $Skills = 'video-orquestrador','video-decupagem','video-colorgrade','video-legendas','video-motion','video-entrega'
 function Say($m) { Write-Host "▸ $m" -ForegroundColor Magenta }
 function Warn($m) { Write-Host "! $m" -ForegroundColor Yellow }
@@ -22,7 +29,7 @@ function Has($c) { [bool](Get-Command $c -ErrorAction SilentlyContinue) }
 
 $Py = if (Has 'python') { 'python' } elseif (Has 'py') { 'py' } else { throw 'Python 3.9+ é obrigatório' }
 $SettingsPath = Join-Path $ClaudeHome 'settings.json'
-$HookScript = Join-Path $HookDir 'video_intent.py'
+$HookScript = Join-Path $PackHome 'video_intent.py'
 
 function Set-Hook([bool]$add) {
   $s = if ((Test-Path $SettingsPath) -and (Get-Content $SettingsPath -Raw).Trim()) {
@@ -59,7 +66,7 @@ function Add-Mcp($name, [string[]]$mcpArgs) {
 
 if ($Uninstall) {
   foreach ($s in $Skills) { Remove-Item -Recurse -Force (Join-Path $ClaudeHome "skills\$s") -ErrorAction SilentlyContinue }
-  Remove-Item -Recurse -Force $HookDir -ErrorAction SilentlyContinue
+  Remove-Item -Recurse -Force $PackHome, $OldHookDir -ErrorAction SilentlyContinue
   Set-Hook $false; Set-ClaudeMd $false
   if (Has 'claude') { foreach ($m in 'premiere-pro','aftereffects','davinci-resolve','opusclip','invideo','higgsfield') { & claude mcp remove --scope user $m 2>$null | Out-Null } }
   Say 'Video AI Pack removido.'; return
@@ -83,9 +90,21 @@ foreach ($s in $Skills) {
   Copy-Item -Recurse (Join-Path $Pack "skills\$s") $dst
 }
 
-Say 'Registrando hook UserPromptSubmit'
-New-Item -ItemType Directory -Force $HookDir | Out-Null
-Copy-Item (Join-Path $Pack 'hooks\video_intent.py') $HookDir -Force
+Say "Instalando roteador e catálogo das 100 skills em $PackHome"
+Remove-Item -Recurse -Force $OldHookDir -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Force $PackHome | Out-Null
+Copy-Item (Join-Path $Pack 'tools\pack.py'), (Join-Path $Pack 'hooks\video_intent.py'), (Join-Path $Pack 'catalogo\skills.json') $PackHome -Force
+$PackPy = Join-Path $PackHome 'pack.py'
+$cfg = @()
+if ($Apps.Count) { $cfg += '--apps', ($Apps -join ',') }
+if ($Apis.Count) { $cfg += '--apis', ($Apis -join ',') }
+if ($Budget -gt 0) { $cfg += '--budget', "$Budget" }
+if ($cfg.Count) { & $Py $PackPy config @cfg | Out-Null }
+if (-not $NoSync) {
+  Say 'Baixando o cofre (SKILL.md das 100 skills, ~1 MB, custo fixo zero)'
+  & $Py $PackPy sync
+}
+Say 'Registrando hook UserPromptSubmit (roteamento automático por pedido)'
 Set-Hook $true
 
 Say 'Adicionando regras ao CLAUDE.md global'
@@ -110,7 +129,7 @@ if ($Mcp.Count -and (Has 'claude')) {
 
 if ($Community) {
   Say 'Instalando skills da comunidade'
-  if (Has 'npx') { & npx -y skills add remotion-dev/skills; & npx -y skills add WyattBlue/auto-editor }
+  if (Has 'npx') { & npx -y skills add https://github.com/remotion-dev/skills; & npx -y skills add https://github.com/WyattBlue/auto-editor }
   if (Has 'git') {
     $tmp = Join-Path ([IO.Path]::GetTempPath()) ("mdc" + [guid]::NewGuid())
     & git clone --depth 1 https://github.com/LobzyJay/motion-design-with-claude.git $tmp
@@ -119,5 +138,6 @@ if ($Community) {
   }
 }
 
+& $Py $PackPy stats
 Say 'Video AI Pack instalado. Reinicie o Claude Code e teste:'
 Write-Host '   "decupa o video.mp4, colorgrade cinematic e legenda karaokê pra Reels"'

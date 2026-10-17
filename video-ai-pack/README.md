@@ -38,6 +38,26 @@ sozinho, e fecha com um checklist de QA.
 algo que reconheça o pedido, transforme em especificação concreta, escolha a melhor rota disponível
 e encadeie as etapas na ordem profissional. É isso que este pack faz.
 
+### Top-100 skills da comunidade (comparadas e integradas)
+Cruzei **5.490 skills** do skills.sh e do claudemarketplaces.com usando instalações, estrelas, auditorias de segurança
+(Gen Agent Trust Hub, Socket, Snyk), data de lançamento e o **tamanho real de cada SKILL.md em tokens**.
+Removi os espelhos e fiz a curadoria pela aderência ao fluxo Premiere/AE/Resolve. Ranking completo, metodologia e achados:
+**[`catalogo/CATALOGO.md`](catalogo/CATALOGO.md)**. Dados brutos: [`catalogo/skills.json`](catalogo/skills.json).
+
+| Categoria | Destaques (nota) |
+|---|---|
+| Decupagem | `auto-editor-export` (84,6, gera XML para Premiere/Resolve) · `auto-editor` (81,6) · `resolve-rough-cut` / `resolve-tighten-recording` · `video-use` |
+| Cor | `resolve-color` (77,5) · `color-grading-finishing` (70,2). Categoria mais fraca, coberta pela skill própria `video-colorgrade` |
+| Legendas | `remotion-captions` (87,7) · `openai/transcribe` (79,6) · `auto-editor-transcribe` (77,0) · `skill-captions` |
+| Motion / AE | `hyperframes-animation` (85,9) · `iart-ai/after-effects` (79,4) · `motion-art-direction` · `lobzyjay/motion-design` |
+| Apps | `resolve-session` (78,6) · `flue/premiere` · `premiere-pro-mcp` · `edit-premiere-project` · `capcut-edit` |
+| Programático | Remotion oficial (create/render/best-practices) · HyperFrames (core/media-use) |
+
+**Por que não instalar as 100?** Só as descrições somariam ~10,2k tokens fixos em toda sessão, e várias skills
+disputariam o mesmo gatilho. O pack guarda as 100 num **cofre** fora de `~/.claude/skills` (custo fixo zero).
+A cada pedido de vídeo, o **roteador** escolhe as 2 a 5 melhores para aquelas intenções e apps, dentro de um orçamento (padrão 7k tokens).
+Pedidos que não são de vídeo não custam nada.
+
 ---
 
 ## 2. Como funciona
@@ -46,9 +66,10 @@ e encadeie as etapas na ordem profissional. É isso que este pack faz.
  Você: "decupa esse vídeo, cor cinematic e legenda pro Reels"
           │
           ▼
- [hook UserPromptSubmit]  video_intent.py
-   detecta intenções (decupagem, cor, legenda, motion, áudio, entrega, app alvo)
-   e injeta instruções no contexto
+ [hook UserPromptSubmit]  video_intent.py  →  pack.py route
+   detecta intenções (10 tipos) + apps (Premiere, Resolve, AE, Remotion…)
+   escolhe 2–5 skills do top-100 no cofre, dentro do orçamento de tokens,
+   e injeta a lista exata (com caminhos) no contexto
           │
           ▼
  [skill video-orquestrador]
@@ -62,6 +83,8 @@ e encadeie as etapas na ordem profissional. É isso que este pack faz.
 | Componente | Arquivo | Função |
 |---|---|---|
 | Hook automático | `hooks/video_intent.py` | Liga o pack sozinho em qualquer pedido de vídeo, sem comando |
+| Roteador + cofre | `tools/pack.py` + `catalogo/skills.json` | Escolhe as skills do top-100 por pedido; `sync`, `route`, `list`, `install`, `config`, `stats` |
+| Catálogo | `catalogo/CATALOGO.md` | Ranking comparativo das 100 skills com metodologia e achados |
 | Orquestrador | `skills/video-orquestrador` | Aprimora o prompt, monta a tabela de roteamento e define a ordem do pipeline |
 | Decupagem | `skills/video-decupagem` + `decupagem.py` | Corta silêncios, fillers e retakes; gera log com timecode, EDL e rough cut |
 | Cor | `skills/video-colorgrade` + `analisar_cor.py` | Mede a imagem, corrige balanço de branco, níveis e exposição, aplica 6 looks e exporta **LUT .cube** |
@@ -94,7 +117,11 @@ Set-ExecutionPolicy -Scope Process Bypass
 |---|---|
 | (sem opções) | Skills + hook + CLAUDE.md + `faster-whisper` e `auto-editor` |
 | `--mcp premiere,ae,resolve,opusclip,invideo,higgsfield` ou `all` | Registra os MCPs no escopo do usuário |
-| `--community` | Remotion skills, auto-editor skill e as skills de motion do LobzyJay |
+| `--apps premiere,resolve,aftereffects` | Apps que você tem. O roteador libera as skills que dependem deles mesmo quando o pedido não cita o app |
+| `--apis elevenlabs,openai,…` | APIs pagas que você usa. Sem isso, as skills de API ficam de fora |
+| `--budget 7000` | Teto de tokens de skills externas por pedido |
+| `--no-sync` | Não baixa o cofre agora (rode depois `pack.py sync`) |
+| `--community` | Instala as skills **completas** (com scripts) de Remotion e auto-editor e as de motion do LobzyJay |
 | `--uninstall` | Remove tudo e deixa o resto do `settings.json` e do `CLAUDE.md` como estava |
 
 O instalador é idempotente: rodar de novo atualiza sem duplicar.
@@ -132,6 +159,18 @@ python3 ~/.claude/skills/video-legendas/scripts/legendas.py graded.mp4 --estilo 
 ```
 
 Mais modelos em [`prompts/biblioteca.md`](prompts/biblioteca.md).
+
+Roteador na mão (útil no Claude Desktop, onde não há hook):
+```bash
+P=~/.claude/video-ai-pack/pack.py
+python3 $P route "tira os silêncios do podcast no Resolve e exporta"   # o que seria carregado
+python3 $P list --cat cor                                              # catálogo por categoria
+python3 $P install resolve-color                                       # skill completa via npx skills add
+python3 $P config --apps premiere,aftereffects --budget 5000
+python3 $P sync --force                                                # atualiza o cofre
+```
+O cofre guarda skills de terceiros. O orquestrador as usa como **referência**: segue as técnicas,
+mas pede confirmação antes de rodar comandos destrutivos ou de rede que elas sugerirem.
 
 ---
 
