@@ -12,7 +12,8 @@ $AgentHome = Join-Path $env:LOCALAPPDATA 'VideoAIAgent'
 $Py = $null
 foreach ($v in '-3.12', '-3.11', '-3.10', '') {
   if (-not (Get-Command py -ErrorAction SilentlyContinue)) { break }
-  $exe = (& py $v -c "import sys; print(sys.executable)" 2>$null | Select-Object -Last 1)
+  $pyv = @(); if ($v) { $pyv += $v }   # nunca passar argumento vazio (PS 7 o envia como "")
+  $exe = (& py @pyv -c "import sys; print(sys.executable)" 2>$null | Select-Object -Last 1)
   if ($exe -and (Test-Path $exe)) { $Py = $exe; break }
 }
 if (-not $Py -and (Get-Command python -ErrorAction SilentlyContinue)) { $Py = 'python' }

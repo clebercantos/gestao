@@ -165,6 +165,21 @@ No Claude Code, você pode pedir: *"use o agente video-ai-mantenedor para revisa
 
 O ajuste fino fica em `%LOCALAPPDATA%\VideoAIAgent\config.json`: `auto_adotar`, `max_adocoes`, `nota_minima`, `min_installs`, `max_tokens_skill`, `retencao_dias` e `notificar`.
 
+### Pipeline com um comando e pasta monitorada (sem gastar tokens)
+```powershell
+cd $env:USERPROFILE\gestao\video-ai-pack\tools
+.\pipeline.ps1 -Video D:\bruto\entrevista.mp4 -Preset reels      # reels | youtube | tv | podcast
+.\pipeline.ps1 -Pasta D:\VideoAI -Registrar -Preset youtube       # vigia D:\VideoAI\entrada a cada 10 min
+.\pipeline.ps1 -Remover                                           # desliga a vigilância
+```
+O pipeline roda decupagem (com transcrição) → cor (look do preset + LUT) → áudio (loudness da plataforma) → 9:16 (reels) → legendas (karaokê gravada no vídeo em reels, SRT nos outros presets).
+O resultado vai para a pasta `ENTREGA/`, com o vídeo final, `cortes.edl`, `grade.cube` e `legendas.srt`, mais um `decisoes.md` explicando cada escolha.
+Na pasta monitorada:
+- `entrada/` recebe os vídeos que você soltar;
+- `saida/` guarda os resultados;
+- `processados/` guarda os originais, que nunca são apagados;
+- `erros/` guarda os vídeos que falharam, com o log.
+
 ### Memória permanente (todas as conversas e agentes consultam)
 O instalador cria `~/.claude/memoria/` e faz **toda** sessão do Claude Code ler esses arquivos (import no `~/.claude/CLAUDE.md`).
 Isso vale também para os agentes, subagentes e o `claude -p` do agente agendado:

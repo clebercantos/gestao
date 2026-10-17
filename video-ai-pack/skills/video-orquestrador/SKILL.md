@@ -36,6 +36,9 @@ Defaults:
 ## Fase 3 — Rota
 Prioridade: **MCP do app aberto > conector cloud > scripts locais do pack**. Mantenha sempre um projeto editável (EDL/XML).
 
+- **Apps no PC do usuário:** `magnific-plugins` é a rota principal para Premiere, AE e Resolve. Os MCPs `premiere-pro`, `aftereffects` e `davinci-resolve` ficam de reserva. No projeto `gestao`, o Filmit está desativado.
+- **Lote ou "só faz tudo":** use `video-ai-pack/tools/pipeline.py`, que roda decupagem → cor → áudio → formato → legendas → ENTREGA sem gastar tokens. Depois, revise o `decisoes.md` e um frame do resultado.
+
 **Skills:** o hook do pack já entrega a lista ideal (as 2 a 5 skills do top-100 escolhidas para este pedido, dentro do orçamento de tokens).
 Leia cada uma só quando a etapa dela chegar. Sem hook (Claude Desktop/Cowork), rode:
 `python3 ~/.claude/video-ai-pack/pack.py route "<pedido>"` e leia os arquivos indicados no cofre.
