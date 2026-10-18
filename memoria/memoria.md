@@ -46,6 +46,7 @@
 - 2026-10-17 — O repositório `clebercantos/gestao` é **público**: não versionar conversas, credenciais nem dados pessoais nele.
 
 ## Decisões em vigor
+- 2026-10-18 — Plugin **Caveman Mode: Short Answers** (Stefan Petrovici, diretório da Anthropic) ativado no projeto via `.claude/settings.json`. Pelo terminal: `claude plugin install caveman-mode-short-answers@anthropic-plugin-directory` (o nome `caveman@anthropic-plugin-directory` instala outro plugin, o do Ali Akram). Liga com `/caveman` ou "caveman mode"; desliga com "normal answers".
 - 2026-10-18 — Plugin **Ruflo** do GitHub (ruvnet/ruflo, antigo claude-flow; não é o "Ruflo AI Team" do diretório) ativado no projeto via `.claude/settings.json`: ruflo-core (MCP com 300+ ferramentas e hooks em Bash/Edit), ruflo-console (`/ruflo`) e ruflo-mods. No PC: `claude plugin marketplace add ruvnet/ruflo` + `claude plugin install ruflo-core@ruflo` (idem console/mods). Precisa de `node`.
 - 2026-10-17 — O usuário autorizou o agente a instalar/configurar o que for necessário no PC (MCPs, CLIs) sem pedir a cada vez; continuam exigindo aviso: gastar créditos pagos (> ~US$ 5), publicar, force-push e apagar dados do usuário.
 - 2026-10-17 — No PC, o projeto `gestao` foi isolado pelo usuário: ficam só `magnific-plugins` (rota principal para Premiere/AE/Resolve), `premiere-pro`, `aftereffects`, `davinci-resolve`, `opusclip` e Claude Docs. Filmit, Adobe, Canva, Gmail/Drive/Calendar e os `data:*` estão desativados ali (as outras pastas não mudaram).
