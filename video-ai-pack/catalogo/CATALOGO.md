@@ -24,42 +24,7 @@ Tiers: **ouro** ≥ 75 · **prata** 65–75 · **bronze** < 65. "n/d" quer dizer
 6. **Skills que você já tem no claude.ai:** `anthropic-skills:motion-design` é a mesma da LottieFiles e as `gsap-*` são as oficiais da GreenSock. O roteador não duplica essas skills.
 7. **Removidas na curadoria:** skills internas de manutenção (`remotion-dev/remotion/pr-name`, `add-expert`, `upload-r2`…), áudio de games (Unity, Godot, Phaser), clones de clones e skills com auditoria *Fail*.
 
-## Ranking geral (top 30)
-
-| # | Nota | Skill | Categoria | Tokens | Instalações | Requisito |
-|---|---|---|---|---|---|---|
-| 1 | 87.7 | `remotion-dev/skills/remotion-captions` | legendas | 256 | 164.8K | Remotion |
-| 2 | 86.0 | `remotion-dev/skills/remotion-create` | programatico | 655 | 167.1K | Remotion |
-| 3 | 86.0 | `remotion-dev/skills/remotion-render` | programatico | 156 | 168.0K | Remotion |
-| 4 | 85.9 | `heygen-com/hyperframes/hyperframes-animation` | motion | 1940 | 911.2K | HyperFrames |
-| 5 | 84.6 | `wyattblue/auto-editor/auto-editor-export` | decupagem | 820 | 514 | local → XML Premiere/Resolve/FCP |
-| 6 | 84.3 | `remotion-dev/skills/remotion-best-practices` | programatico | 1029 | 630.0K | Remotion |
-| 7 | 83.1 | `heygen-com/hyperframes/hyperframes-core` | programatico | 3137 | 839.6K | HyperFrames |
-| 8 | 82.2 | `remotion-dev/skills/remotion-studio` | programatico | 381 | 130.9K | Remotion |
-| 9 | 81.6 | `wyattblue/auto-editor/auto-editor` | decupagem | 1637 | 522 | local (auto-editor) |
-| 10 | 81.2 | `heygen-com/hyperframes/media-use` | programatico | 2196 | 934.0K | HyperFrames |
-| 11 | 80.4 | `heygen-com/hyperframes/hyperframes-keyframes` | motion | 3943 | 697.2K | HyperFrames |
-| 12 | 79.6 | `openai/skills/transcribe` | legendas | 643 | 3.7K | API OpenAI |
-| 13 | 79.4 | `iart-ai/motion-design-skills/after-effects` | motion | 1566 | 2.1K | After Effects |
-| 14 | 78.9 | `greensock/gsap-skills/gsap-timeline` | motion | 997 | 63.6K | web/HyperFrames |
-| 15 | 78.6 | `samuelgursky/davinci-resolve-mcp/resolve-session` | apps | 858 | 20 | Resolve + MCP samuelgursky |
-| 16 | 77.9 | `heygen-com/hyperframes/motion-graphics` | motion | 3817 | 470.8K | HyperFrames |
-| 17 | 77.6 | `affaan-m/ecc/video-editing` | decupagem | 2841 | 13.2K | local (ffmpeg) |
-| 18 | 77.5 | `samuelgursky/davinci-resolve-mcp/resolve-color` | cor | 1816 | 22 | Resolve + MCP |
-| 19 | 77.2 | `charlie947/motion-graphics-skills/reel-export` | entrega | 703 | 991 | local (ffmpeg) |
-| 20 | 77.0 | `wyattblue/auto-editor/auto-editor-transcribe` | legendas | 1212 | 487 | local (auto-editor) |
-| 21 | 76.8 | `heygen-com/hyperframes/embedded-captions` | legendas | 8403 | 420.0K | local (HyperFrames) |
-| 22 | 76.8 | `heygen-com/hyperframes/hyperframes` | programatico | 5054 | 1.0M | HyperFrames |
-| 23 | 76.7 | `heygen-com/hyperframes/talking-head-recut` | decupagem | 16135 | 377.5K | local (HyperFrames) |
-| 24 | 76.7 | `heygen-com/hyperframes/general-video` | programatico | 5349 | 611.4K | HyperFrames |
-| 25 | 76.5 | `lottiefiles/motion-design-skill/motion-design` | motion | 2988 | 17.6K | agnóstico |
-| 26 | 76.4 | `sfkislev/flue/premiere` | apps | 386 | 1.8K | Premiere + Flue (ExtendScript) |
-| 27 | 76.1 | `hetpatel-11/adobe_premiere_pro_mcp/premiere-pro-mcp` | apps | 1258 | 769 | Premiere + MCP hetpatel |
-| 28 | 76.1 | `iart-ai/motion-design-skills/motion-art-direction` | motion | 1732 | 2.4K | agnóstico |
-| 29 | 75.8 | `digitalsamba/claude-code-video-toolkit/ffmpeg` | ffmpeg | 3205 | 11.8K | local (ffmpeg) |
-| 30 | 75.7 | `pluviobyte/rnskill/skill-captions` | legendas | 1175 | 175 | local |
-
-## Todas as 100 por categoria
+## As 100 por categoria (coluna # = posição no ranking geral)
 
 ### Decupagem / edição (14)
 

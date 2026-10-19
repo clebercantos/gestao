@@ -24,7 +24,4 @@ Sessão Claude Code local · branch `claude/video-editing-plugins-research-973ws
 - Histórico do Git limpo de mídia de teste (`_teste/` agora no .gitignore).
 
 ## Pendências
-- [ ] Usuário: `/mcp` do conector Adobe (rejeitou as credenciais na reconexão; opcional).
-- [ ] Usuário: fechar o `TEMP_TESTE_CLAUDE.prproj` no Premiere sem salvar.
-- [ ] Reiniciar o app do Claude e testar o MCP do Resolve (agendado 2026-10-18 01:20).
-- [x] PR #1 revisado e mesclado em `main` (squash, e95bddc).
+Consolidadas em [video-ai-pack](2026-10-17_video-ai-pack.md#pendências-abertas). PR #1 revisado e mesclado em `main` (squash, e95bddc).

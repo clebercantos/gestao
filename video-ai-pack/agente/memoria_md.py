@@ -88,10 +88,11 @@ def gerar(dest, repo, claude_home, scan):
     for grupo, nomes in contas.get("skills_conta", {}).items():
         S.append(f"- **{grupo}:** " + ", ".join(f"`{n}`" for n in nomes))
     S += ["", f"## Top-100 da comunidade (cofre do roteador, {len(catalog['skills'])} skills)", "",
-          "Carregadas sob demanda pelo hook (2–5 por pedido). Detalhes e metodologia: `video-ai-pack/catalogo/CATALOGO.md`.", "",
-          "| # | Nota | Skill | Categoria | Tokens | Requisito |", "|---|---|---|---|---|---|"]
+          "Carregadas sob demanda pelo hook (2–5 por pedido). Nota, tokens e requisitos: `video-ai-pack/catalogo/CATALOGO.md`.", ""]
+    cats = {}
     for s in catalog["skills"]:
-        S.append(f"| {s['rank']} | {s['nota']} | `{s['id']}` | {s['categoria']} | {s.get('tokens_corpo') or 'n/d'} | {cut(s['requisito'], 50)} |")
+        cats.setdefault(s["categoria"], []).append(f"`{s['id'].split('/')[0]}/{s['id'].rsplit('/', 1)[-1]}` {s['nota']}")
+    S += [f"- **{c}:** " + ", ".join(v) for c, v in cats.items()]
     S += ["", f"## Adotadas automaticamente pelo agente ({len(local['skills'])})", ""]
     S += [f"- `{s['id']}` — nota {s['nota']}, {s['categoria']}, {s.get('tokens_corpo')} tokens ({s['requisito']})" for s in local["skills"]] or ["- nenhuma ainda"]
     (dest / "skills.md").write_text("\n".join(S) + "\n", encoding="utf-8")
@@ -108,7 +109,7 @@ def gerar(dest, repo, claude_home, scan):
     M += ["", "Instalar/atualizar: `install.ps1 -Mcp premiere,ae,resolve,opusclip,invideo,higgsfield` (ou `all`). Remotos: login em `/mcp`.",
           "", "## Alternativas pesquisadas (não instaladas)", ""]
     M += [f"- [{m['nome']}]({m['fonte']})" for m in contas.get("mcps_alternativos", [])]
-    M += ["", "Regra: MCP novo só é instalado com aprovação do usuário (ver `memoria.md` → Decisões)."]
+    M += ["", "Regra: numa sessão, o agente instala MCPs novos sem pedir (decisão em `memoria.md`); a Descoberta agendada só reporta."]
     (dest / "mcps.md").write_text("\n".join(M) + "\n", encoding="utf-8")
 
     # ---------------------------------------------------------------- agentes.md
@@ -139,7 +140,7 @@ def gerar(dest, repo, claude_home, scan):
         if cfg:
             A += ["", "Config do agente:", "", "```json", json.dumps(cfg, ensure_ascii=False, indent=2), "```"]
     A += ["", "## Automações na nuvem (sessões claude.ai/code)", "",
-          "- PR #1 `clebercantos/gestao`: sessão inscrita nos eventos do PR (CI, revisões) e com check-ins de segurança agendados.",
+          "- Sessões que abrem PR acompanham os eventos dele (CI, revisões) até o merge.",
           "- Sessões na nuvem leem `CLAUDE.md` e `memoria/` do repositório (versão pública da memória)."]
     (dest / "agentes.md").write_text("\n".join(A) + "\n", encoding="utf-8")
 

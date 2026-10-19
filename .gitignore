@@ -7,3 +7,7 @@ _teste/
 .claude-flow/
 .claude/proven-config.json
 .claude/.proven-config-version
+.swarm/
+agentdb.rvf
+agentdb.rvf.lock
+ruvector.db

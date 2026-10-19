@@ -130,7 +130,7 @@ O instalador é idempotente: rodar de novo atualiza sem duplicar.
 
 ### Video AI Agent: instalação e manutenção automáticas no Windows
 Um único script instala tudo e deixa um agente cuidando da instalação sozinho.
-Não precisa de administrador. Abra o **PowerShell** (não precisa de admin) e rode:
+Abra o **PowerShell** (não precisa de admin) e rode:
 ```powershell
 Set-ExecutionPolicy -Scope Process Bypass
 git clone https://github.com/clebercantos/gestao.git $env:USERPROFILE\gestao
@@ -152,8 +152,8 @@ O que ele faz:
 
 4. Mostra uma **notificação do Windows** quando há alerta. Os relatórios ficam em `%LOCALAPPDATA%\VideoAIAgent\relatorios\ultimo.md`, com um atalho na área de trabalho.
 
-**Limite de segurança:** o agente aplica sozinho as atualizações do que você já aprovou e adota skills, que são só arquivos de instrução auditados.
-**MCPs, conectores e programas novos** aparecem no relatório com o comando de instalação, mas só entram com o seu OK.
+**Limite de segurança:** a rotina agendada aplica sozinha as atualizações do que já está instalado e adota skills auditadas (só arquivos de instrução).
+**MCPs, conectores e programas novos** aparecem no relatório com o comando de instalação; quem instala é o subagente `video-ai-mantenedor`, numa sessão.
 No Claude Code, você pode pedir: *"use o agente video-ai-mantenedor para revisar o relatório"*.
 
 | Comando | Para quê |
@@ -181,22 +181,13 @@ Na pasta monitorada:
 - `erros/` guarda os vídeos que falharam, com o log.
 
 ### Memória permanente (todas as conversas e agentes consultam)
-O instalador cria `~/.claude/memoria/` e faz **toda** sessão do Claude Code ler esses arquivos (import no `~/.claude/CLAUDE.md`).
-Isso vale também para os agentes, subagentes e o `claude -p` do agente agendado:
+O instalador cria `~/.claude/memoria/` e importa `memoria.md` e `INDEX.md` no `~/.claude/CLAUDE.md`, então **toda** sessão do Claude Code,
+inclusive agentes, subagentes e o `claude -p` do agente agendado, lê a memória. O mapa dos arquivos está em [`memoria/INDEX.md`](../memoria/INDEX.md).
+No PC há também `conversas/`, com o resumo automático de cada sessão (hook `registrar_conversa.py`, segredos mascarados).
 
-| Arquivo | O que guarda | Quem atualiza |
-|---|---|---|
-| `memoria.md` | preferências, **correções**, aprendizados e decisões (sempre carregado) | o Claude, quando você corrige ou ele aprende algo (o hook `memoria_hook.py` detecta "não, está errado", "prefiro", "lembre disso"…) |
-| `INDEX.md` | mapa da memória e como buscar | instalador/agente |
-| `skills.md` | todas as skills: pack, instaladas no PC, conta Claude, top-100, adotadas | agente (diário) |
-| `mcps.md` | MCPs registrados (`claude mcp list`), conectores claude.ai, MCPs do pack, alternativas | agente (diário) |
-| `agentes.md` | agentes, subagentes, hooks e automações ativos | agente (diário) |
-| `conversas/` | resumo automático de **cada** sessão do Claude Code (pedidos, respostas, arquivos, ferramentas), com segredos mascarados | hook `registrar_conversa.py` (SessionEnd) |
-| `historico/` | resumos curados das conversas importantes | o Claude |
-
-- **Privacidade:** `~/.claude/memoria/` fica só no seu PC. Este repositório é **público**, por isso a pasta `memoria/` dele guarda apenas a versão sem dados sensíveis. É essa versão que as sessões na nuvem leem, via `CLAUDE.md` na raiz.
+- **Privacidade:** `~/.claude/memoria/` fica só no seu PC. Este repositório é **público**, então a pasta `memoria/` dele guarda apenas a versão sem dados sensíveis, que as sessões na nuvem leem via `CLAUDE.md`.
 - **Sincronizar PC ↔ nuvem:** crie um repositório **privado** e instale com `.\instalar-agente.ps1 -RepoMemoria https://github.com/<voce>/<repo-privado>.git`. A manutenção diária faz commit, pull e push da memória.
-- **Conversas no claude.ai (web/app):** elas não rodam no seu PC, então os hooks não as alcançam. Para que também consultem a memória, coloque o conteúdo de `memoria.md` nas instruções de um Projeto do claude.ai ou nas preferências do perfil.
+- **Conversas no claude.ai (web/app):** os hooks não as alcançam; cole o texto de [`memoria/instrucoes-claude-ai.md`](../memoria/instrucoes-claude-ai.md) no perfil ou num Projeto.
 
 ### Passos manuais (uma vez)
 1. **Premiere:** depois do `--install-cep`, reinicie o Premiere e abra `Window > Extensions > MCP for Adobe Premiere Pro`. Para Claude Desktop, há um `.mcpb` na [release do projeto](https://github.com/leancoderkavy/premiere-pro-mcp).
@@ -253,10 +244,10 @@ mas pede confirmação antes de rodar comandos destrutivos ou de rede que elas s
 - Conectores cloud (Magnific, Higgsfield, OpusClip, invideo) consomem créditos. O orquestrador avisa antes de gastar mais de ~US$ 5.
 - Remotion exige licença comercial para empresas com 4 ou mais funcionários. Confira em remotion.dev.
 
-## Fontes
-- Premiere: [leancoderkavy/premiere-pro-mcp](https://github.com/leancoderkavy/premiere-pro-mcp), [hetpatel-11/Adobe_Premiere_Pro_MCP](https://github.com/hetpatel-11/adobe_premiere_pro_mcp), [antipaster/Adobe-Premiere-Pro-MCP](https://github.com/antipaster/adobe-premiere-pro-mcp), [fuuuuuuma/premiere-skills](https://github.com/fuuuuuuma/premiere-skills)
-- After Effects: [kumoproductions/mcp-aftereffects](https://github.com/kumoproductions/mcp-aftereffects), [JUNKDOGE-JOE/after-effects-mcp](https://github.com/JUNKDOGE-JOE/after-effects-mcp), [LobzyJay/motion-design-with-claude](https://github.com/LobzyJay/motion-design-with-claude), [Vagon: Claude Code + After Effects](https://vagon.io/blog/how-to-use-claude-code-with-after-effects), [Synthetic AE MCP](https://synthetic.com.ar/ae-mcp)
+## Fontes (além das já citadas acima)
+- Premiere: [hetpatel-11/Adobe_Premiere_Pro_MCP](https://github.com/hetpatel-11/adobe_premiere_pro_mcp), [antipaster/Adobe-Premiere-Pro-MCP](https://github.com/antipaster/adobe-premiere-pro-mcp), [fuuuuuuma/premiere-skills](https://github.com/fuuuuuuma/premiere-skills)
+- After Effects: [Vagon: Claude Code + After Effects](https://vagon.io/blog/how-to-use-claude-code-with-after-effects), [Synthetic AE MCP](https://synthetic.com.ar/ae-mcp)
 - Higgsfield: [Katana (09/10/2026)](https://www.ababnews.com/news/1e73c91f-9643-45d8-978c-28346cc36322), [Higgsfield help center](https://higgsfield.ai/creator-hub/help-center/integrations/how-do-i-connect-higgsfield-to-claude), [AlphaSignal](https://alphasignal.ai/news/higgsfield-lets-claude-build-fully-editable-after-effects-projects)
-- Resolve: [CG Channel, Resolve 21.1](https://www.cgchannel.com/2026/09/blackmagic-design-releases-resolve-21-1/), [lordhoell/davinci-resolve-mcp](https://github.com/lordhoell/davinci-resolve-mcp), [barckley75/resolve-claude-mcp](https://github.com/barckley75/resolve-claude-mcp)
+- Resolve: [barckley75/resolve-claude-mcp](https://github.com/barckley75/resolve-claude-mcp)
 - Conectores: [invideo MCP](https://invideo.io/mcp/), [OpusClip MCP](https://www.opus.pro/mcp), [Adobe for creativity](https://blog.adobe.com/en/publish/2026/04/28/adobe-for-creativity-connector), [OpenClip MCP](https://openclip.app/mcp)
-- Skills: [Remotion skills](https://www.remotion.dev/docs/ai/skills), [video-captions](https://github.com/katareayush/video-captions), [video-prep](https://github.com/lucyfengcl-art/video-prep), [claude-code-video-editing-skill](https://github.com/vincentventalon/claude-code-video-editing-skill), [video-editing-skill](https://github.com/6missedcalls/video-editing-skill)
+- Skills: [video-editing-skill](https://github.com/6missedcalls/video-editing-skill)
