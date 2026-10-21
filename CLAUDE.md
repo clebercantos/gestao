@@ -11,4 +11,5 @@
 
 ## Projeto
 - `index.html`: site da Trevisa Films.
+- `PROMPT-COMPLETO.md`: prompt para retomar tudo + o que foi feito e o que falta (leia ao começar).
 - `video-ai-pack/`: pack de edição de vídeo com IA (skills, roteador top-100, MCPs, agente Windows). Veja `video-ai-pack/README.md`.

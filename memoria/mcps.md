@@ -44,4 +44,5 @@ Instalar/atualizar: `install.ps1 -Mcp premiere,ae,resolve,opusclip,invideo,higgs
 - [OpenClip MCP](https://openclip.app/mcp)
 - [Palmier Pro (editor macOS com MCP)](https://explainx.ai/blog/palmier-pro-ai-video-editor-mcp-claude-guide-2026)
 
+Regra: o usuário autorizou instalar/configurar MCPs e CLIs no PC sem pedir a cada vez; a Descoberta agendada só reporta MCPs novos. Avisar antes de gastar créditos pagos, publicar ou apagar dados (ver `memoria.md` → Decisões).
 Regra: numa sessão, o agente instala MCPs novos sem pedir (decisão em `memoria.md`); a Descoberta agendada só reporta.

@@ -122,6 +122,7 @@ say "Instalando roteador e catálogo das 100 skills em $PACK_HOME"
 rm -rf "$OLD_HOOK_DIR"
 mkdir -p "$PACK_HOME"
 cp "$PACK_DIR/tools/pack.py" "$PACK_DIR"/hooks/*.py "$PACK_DIR/catalogo/skills.json" "$PACK_HOME/"
+mkdir -p "$PACK_HOME/tools" && cp "$PACK_DIR"/tools/pipeline.* "$PACK_HOME/tools/"
 chmod +x "$PACK_HOME"/*.py
 [[ ${#CFG_ARGS[@]} -gt 0 ]] && "$PY" "$PACK_HOME/pack.py" config "${CFG_ARGS[@]}" >/dev/null
 if [[ $SYNC == 1 ]]; then

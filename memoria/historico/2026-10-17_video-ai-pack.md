@@ -105,6 +105,9 @@ trabalhe automaticamente em cada pedido: aprimorar o prompt e escolher sozinho d
 - [ ] Premiere: manter um único painel CEP do MCP rodando e fechar o `TEMP_TESTE_CLAUDE.prproj` sem salvar. After Effects: abrir sem `-m` e permitir scripts.
 - [ ] Reiniciar o app do Claude (depois de 01:20) e testar o MCP do Resolve.
 - [ ] Colar `memoria/instrucoes-claude-ai.md` no perfil ou projeto do claude.ai.
+- [x] PR #2 mesclado na `main` (19:55 UTC, merge 239b704): skill de áudio, pipeline, ajustes do agente e memória.
+- [x] PR #1 mesclado na `main` (06:34 UTC). Os ajustes seguintes (skill de áudio, fallback de branch, instruções do claude.ai) vão em um PR novo.
+- [ ] Opcional: repositório privado para a memória (`-RepoMemoria`).
 - [ ] Opcional: pasta para o `pipeline.ps1 -Pasta X -Registrar` vigiar; repositório privado para a memória (`-RepoMemoria`).
 
 **A conferir (sessão local):**

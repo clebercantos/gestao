@@ -123,6 +123,8 @@ Remove-Item -Recurse -Force $OldHookDir -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force $PackHome | Out-Null
 Copy-Item (Join-Path $Pack 'tools\pack.py'), (Join-Path $Pack 'catalogo\skills.json') $PackHome -Force
 Copy-Item (Join-Path $Pack 'hooks\*.py') $PackHome -Force
+New-Item -ItemType Directory -Force (Join-Path $PackHome 'tools') | Out-Null
+Copy-Item (Join-Path $Pack 'tools\pipeline.*') (Join-Path $PackHome 'tools') -Force
 $PackPy = Join-Path $PackHome 'pack.py'
 $cfg = @()
 if ($Apps.Count) { $cfg += '--apps', ($Apps -join ',') }
