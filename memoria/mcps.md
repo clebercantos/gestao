@@ -1,6 +1,6 @@
 # MCPs e conectores — referência completa
 
-Atualizado em 2026-10-17 · fonte: documentação do repositório (sem varredura local).
+Atualizado em 2026-10-19 · fonte: documentação do repositório (sem varredura local).
 
 ## Conectores da conta claude.ai
 
@@ -44,4 +44,4 @@ Instalar/atualizar: `install.ps1 -Mcp premiere,ae,resolve,opusclip,invideo,higgs
 - [OpenClip MCP](https://openclip.app/mcp)
 - [Palmier Pro (editor macOS com MCP)](https://explainx.ai/blog/palmier-pro-ai-video-editor-mcp-claude-guide-2026)
 
-Regra: MCP novo só é instalado com aprovação do usuário (ver `memoria.md` → Decisões).
+Regra: numa sessão, o agente instala MCPs novos sem pedir (decisão em `memoria.md`); a Descoberta agendada só reporta.

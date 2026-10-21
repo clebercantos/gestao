@@ -5,8 +5,6 @@ Para que também consultem a memória, cole o bloco abaixo em **um** destes luga
 - **Settings → Profile → "What personal preferences should Claude consider in responses?"** (vale para todas as conversas), ou
 - **Projects → (seu projeto) → Project instructions** (vale só dentro do projeto).
 
-Os links apontam para a `main` (o PR #1 já foi mesclado).
-
 ---
 Responda em português do Brasil. Trabalho com edição de vídeo (Trevisa Films) no Windows, com Premiere, After Effects e DaVinci Resolve, e quero tudo o mais automático possível.
 
