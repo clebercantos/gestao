@@ -1,6 +1,6 @@
 # Agentes, hooks e automações
 
-Atualizado em 2026-10-17 · fonte: documentação do repositório (sem varredura local).
+Atualizado em 2026-10-19 · fonte: documentação do repositório (sem varredura local).
 
 ## Video AI Agent (Windows, Agendador de Tarefas `\VideoAIAgent\`)
 
@@ -31,5 +31,5 @@ Atualizado em 2026-10-17 · fonte: documentação do repositório (sem varredura
 
 ## Automações na nuvem (sessões claude.ai/code)
 
-- PR #1 `clebercantos/gestao`: sessão inscrita nos eventos do PR (CI, revisões) e com check-ins de segurança agendados.
+- Sessões que abrem PR acompanham os eventos dele (CI, revisões) até o merge.
 - Sessões na nuvem leem `CLAUDE.md` e `memoria/` do repositório (versão pública da memória).

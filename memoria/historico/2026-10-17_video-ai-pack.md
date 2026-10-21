@@ -78,16 +78,8 @@ trabalhe automaticamente em cada pedido: aprimorar o prompt e escolher sozinho d
 **Decisão:** o repositório é **público**, então conversas e dados pessoais ficam só em `~/.claude/memoria/` (privado). O repositório guarda apenas a memória pública.
 
 ### 6. Sessão local via Remote Control
-- Prompt de continuação salvo em `PROMPT-LOCAL.md`.
-- O usuário ligou `claude remote-control` no PC (DESKTOP-VE4ABKU), e a sessão na nuvem enviou a tarefa para a sessão local.
-- A sessão local instalou tudo e corrigiu bugs reais do Windows:
-  - transcrição com `av`>=17;
-  - CUDA sem cublas;
-  - ffmpeg 9 sem `-filter_complex_script`;
-  - cp1252 em JSON/SRT;
-  - MCP do Resolve: o pacote certo é o samuelgursky via `npx davinci-resolve-mcp setup`;
-  - BOM nos `.ps1`.
-- Ela registrou os aprendizados em `memoria.md` e no histórico `2026-10-17_instalacao-local.md`.
+- O usuário ligou `claude remote-control` no PC, e a sessão na nuvem enviou a tarefa para a sessão local (prompt em `PROMPT-LOCAL.md`, removido em 2026-10-19 por estar obsoleto).
+- A sessão local instalou tudo e corrigiu bugs reais do Windows: detalhes em [instalacao-local](2026-10-17_instalacao-local.md).
 
 ### 7. Ajustes da nuvem após revisar os commits locais
 - Python 3.12 fixado no instalador e no agente.
@@ -108,19 +100,17 @@ trabalhe automaticamente em cada pedido: aprimorar o prompt e escolher sozinho d
 
 ## Pendências abertas
 **Usuário:**
-- [x] Aprovar os pedidos de permissão pendentes na sessão local (aprovados às 16:03 UTC).
-- [ ] Opcional: escolher uma pasta para o `pipeline.ps1 -Pasta X -Registrar` vigiar.
 - [ ] Filmit: painel Filmit no Premiere/AE → aba MCP → Connect (até agora nenhum app conectado).
 - [ ] `/mcp` no Claude Code local: OpusClip e conector Adobe; autorizar o Adobe for creativity no claude.ai.
-- [ ] Premiere: manter um único painel CEP do MCP rodando. After Effects: abrir sem `-m` e permitir scripts.
-- [ ] Reiniciar o app do Claude e testar o MCP do Resolve. Já está liberado: o usuário está em São Paulo e passou de 01:20. A sessão local tinha agendado para 2026-10-18 01:20, mas pode ser antes.
-- [ ] A sessão local bateu o limite de 5 h às 06:39 UTC (renovou às 07:50 UTC); a lista de tarefas foi reenviada.
+- [ ] Premiere: manter um único painel CEP do MCP rodando e fechar o `TEMP_TESTE_CLAUDE.prproj` sem salvar. After Effects: abrir sem `-m` e permitir scripts.
+- [ ] Reiniciar o app do Claude (depois de 01:20) e testar o MCP do Resolve.
 - [ ] Colar `memoria/instrucoes-claude-ai.md` no perfil ou projeto do claude.ai.
 - [x] PR #2 mesclado na `main` (19:55 UTC, merge 239b704): skill de áudio, pipeline, ajustes do agente e memória.
 - [x] PR #1 mesclado na `main` (06:34 UTC). Os ajustes seguintes (skill de áudio, fallback de branch, instruções do claude.ai) vão em um PR novo.
 - [ ] Opcional: repositório privado para a memória (`-RepoMemoria`).
+- [ ] Opcional: pasta para o `pipeline.ps1 -Pasta X -Registrar` vigiar; repositório privado para a memória (`-RepoMemoria`).
 
-**A conferir (sessão local, depois das aprovações):**
+**A conferir (sessão local):**
 - [ ] Filmit: testes `pr_*`, `dv_*` e AE depois do Connect.
 - [ ] As 3 tarefas agendadas com LastTaskResult = 0.
 - [ ] `~/.claude/memoria/conversas/` recebendo as sessões.
