@@ -42,3 +42,16 @@
 - 2026-10-17 — No PC, o projeto `gestao` foi isolado: ficam só `magnific-plugins` (rota principal para Premiere/AE/Resolve), `premiere-pro`, `aftereffects`, `davinci-resolve`, `opusclip` e Claude Docs. Filmit, Adobe, Canva, Gmail/Drive/Calendar e `data:*` estão desativados ali.
 - 2026-10-17 — Rota em vídeo: MCP do app aberto > conector cloud > scripts ffmpeg locais; sempre manter um projeto editável (EDL/XML). Para "faz tudo"/lotes, `pipeline.py`/`pipeline.ps1` (sem tokens) e o Claude revisa o `decisoes.md`.
 - 2026-10-17 — Memória: `memoria.md` + `INDEX.md` importados em todo CLAUDE.md; hooks `memoria_hook.py` (detecta correções) e `registrar_conversa.py` (salva sessões em `conversas/`); o agente regenera `skills.md`, `mcps.md` e `agentes.md` todo dia. Agente/subagente novo lê `memoria.md` e `INDEX.md` e entra em `agentes.md`.
+- 2026-10-21 — Assuntos do **Colégio Interativo** têm repositório, memória, agentes, skills e MCPs próprios em repositório privado separado; não registrar nada do colégio aqui (este repo é público).
+- 2026-10-17 — O usuário autorizou o agente a instalar/configurar o que for necessário no PC (MCPs, CLIs) sem pedir a cada vez; continuam exigindo aviso: gastar créditos pagos (> ~US$ 5), publicar, force-push e apagar dados do usuário.
+- 2026-10-17 — No PC, o projeto `gestao` foi isolado pelo usuário: ficam só `magnific-plugins` (rota principal para Premiere/AE/Resolve), `premiere-pro`, `aftereffects`, `davinci-resolve`, `opusclip` e Claude Docs. Filmit, Adobe, Canva, Gmail/Drive/Calendar e os `data:*` estão desativados ali (as outras pastas não mudaram).
+- 2026-10-17 — Para "faz tudo"/lotes, use o `pipeline.py`/`pipeline.ps1` (sem tokens); o Claude entra para revisar o `decisoes.md` e ajustar no app.
+- 2026-10-17 — Prioridade de rota em vídeo: MCP do app aberto > conector cloud > scripts ffmpeg locais. Sempre manter um projeto editável (EDL/XML).
+- ~~2026-10-17 — O agente instala sozinho só atualizações do que já foi aprovado e skills auditadas. MCPs/programas novos só com OK do usuário.~~ (substituída abaixo)
+- 2026-10-17 — A memória local privada fica em `~/.claude/memoria/` e é a fonte da verdade no PC. Esta pasta do repositório guarda só o que pode ser público.
+- 2026-10-17 — Sistema de memória:
+  - `memoria.md` + `INDEX.md` importados em todo CLAUDE.md;
+  - hook `memoria_hook.py` detecta correções e preferências;
+  - hook `registrar_conversa.py` salva cada sessão em `conversas/`;
+  - o agente regenera `skills.md`, `mcps.md` e `agentes.md` todo dia.
+- 2026-10-17 — Todo agente/subagente novo deve ler `memoria.md` e `INDEX.md` e ser registrado em `agentes.md`.
