@@ -21,6 +21,7 @@
 - 2026-10-18 — "caveman" = plugin **Caveman Mode: Short Answers** do diretório da Anthropic, não o caveman do GitHub (JuliusBrussee). Plugin com nome ambíguo: perguntar qual antes de instalar.
 
 ## Aprendizados técnicos (verificados)
+- 2026-10-22 — A sessão na nuvem só consegue fazer push na própria branch: apagar branches dá HTTP 403, e apagar ou criar repositórios dá 403 na API. Essa limpeza o usuário faz no GitHub.
 - 2026-10-17 — Validado no PC: Premiere via MCP `premiere-pro` (CEP: projeto, import, sequência, split, in/out, export H.264), After Effects 26.5 (comp, keyframe, render; `.mp4` exige o AME, sem ele use "Lossless" `.avi`), Resolve Studio 21.1.1.10 via API (python do venv do davinci-resolve-mcp), `pipeline.ps1` (reels e youtube: vídeo, SRT, EDL, LUT, áudio no alvo) e saúde do agente 28/28.
 - 2026-10-17 — Validação após o PR #2: 7 skills, 3 tarefas com código 0, lock com 2 execuções simultâneas, hooks e memória OK, 7 MCPs conectados (opusclip incluído). O `install` não copiava o `pipeline.*` (corrigido no .ps1 e no .sh). O conector "claude.ai Adobe" mudou de nome e precisa ser desativado também por esse nome no projeto `gestao`.
 - 2026-10-17 — A API do Premiere (via MCP) não aplica LUT `.cube`: aplique em Lumetri > Creative > Look, ou use o Resolve, cuja API aceita LUT.
