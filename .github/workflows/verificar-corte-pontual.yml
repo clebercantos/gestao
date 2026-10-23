@@ -1,0 +1,48 @@
+name: Verificar corte pontual de video
+on:
+  pull_request:
+    paths:
+      - 'video-ai-pack/tools/corte-pontual.py'
+      - '.github/workflows/verificar-corte-pontual.yml'
+  push:
+    paths:
+      - 'video-ai-pack/tools/corte-pontual.py'
+      - '.github/workflows/verificar-corte-pontual.yml'
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Sintaxe e localizacao por palavras (sem IA de rede)
+        run: |
+          python -m py_compile video-ai-pack/tools/corte-pontual.py
+          python - <<'PY'
+          import importlib.util
+          spec = importlib.util.spec_from_file_location("corte", "video-ai-pack/tools/corte-pontual.py")
+          mod = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(mod)
+          raw = ["Somos", "a", "décima", "sétima", "maior", "construtora", "do", "Brasil."]
+          words = [{"raw": w, "token": mod.clean(w), "start": i * 0.3 + 1, "end": i * 0.3 + 1.2}
+                   for i, w in enumerate(raw)]
+          c = mod.candidates(words, "17 maior construtora do Brasil")
+          assert len(c) == 1 and c[0]["numeral_identificado"], c
+          PY
+      - name: Teste FFmpeg e sincronismo de audio/video
+        run: |
+          ffmpeg -hide_banner -loglevel error -f lavfi -i testsrc2=size=320x180:rate=30:duration=8 -f lavfi -i sine=frequency=440:sample_rate=48000:duration=8 -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest /tmp/original.mp4
+          python video-ai-pack/tools/corte-pontual.py /tmp/original.mp4 --inicio 2 --fim 3.5 --fade 0.16 --render --saida /tmp/corte.mp4
+          python - <<'PY'
+          import json, subprocess
+          def probe(path):
+              return json.loads(subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration:stream=codec_type,width,height","-of","json",path]))
+          a,b = probe("/tmp/original.mp4"),probe("/tmp/corte.mp4")
+          assert any(s.get("codec_type")=="audio" for s in b["streams"])
+          assert any(s.get("width")==320 and s.get("height")==180 for s in b["streams"])
+          assert abs(float(b["format"]["duration"])-6.34) < 0.25, b
+          assert float(a["format"]["duration"]) >= 7.9
+          PY
