@@ -1,10 +1,10 @@
 # Vídeo institucional | proxy com IA, aprovação e master 4K
 
-**Objetivo:** retirar a afirmação sobre a 17ª maior construtora do Brasil e a cena correspondente, sem alterar outras partes do institucional.
+**Objetivo:** remover afirmações ou cenas específicas de um institucional sem afetar o restante da narrativa.
 
 ## Por que o processo roda no Windows
 
-O original tem aproximadamente 528 MB e pertence a um cliente. Não subir vídeos privados para repositório GitHub **público**. O repositório hospeda somente código e testes sintéticos. O Google Drive pode armazenar as prévias se uma conta autorizada permitir gravação, mas não é necessário.
+O vídeo original pode ser grande e conter material confidencial. Não subir vídeos privados para repositório GitHub **público**. O repositório hospeda somente código e testes sintéticos. O Google Drive pode armazenar as prévias se uma conta autorizada permitir gravação, mas não é necessário.
 
 A automação usa FFmpeg + faster-whisper localmente. ArtCraft é ferramenta opcional para imagens/vídeos gerados; ChatCut é editor opcional. Nenhuma das duas integrações é condição para executar esta correção.
 
