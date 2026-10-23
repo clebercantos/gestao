@@ -140,8 +140,10 @@ def prepare(args):
 
     review = json.loads(plan.read_text(encoding="utf-8"))
     begin, end = review.get("inicio"), review.get("fim")
-    edited = work / "PREVIA_COMPLETA_720p.mp4"
-    sample = work / "AMOSTRA_DA_EMENDA.mp4"
+    # Nomes derivados dos timecodes evitam mostrar prévias antigas após revisão do corte.
+    suffix = "" if begin is None or end is None else f"_{round(float(begin)*1000)}_{round(float(end)*1000)}_{round(args.fade*1000)}"
+    edited = work / ("PREVIA_COMPLETA_720p" + suffix + ".mp4")
+    sample = work / ("AMOSTRA_DA_EMENDA" + suffix + ".mp4")
     if begin is not None and end is not None:
         begin, end = float(begin), float(end)
         if not (0.3 < begin < end < info["duration"] - 0.3):
