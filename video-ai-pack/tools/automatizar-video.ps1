@@ -35,13 +35,15 @@ Require-Command "ffprobe"
 if ($LASTEXITCODE -ne 0) { throw "Requer Python 3.12 (py -3.12)." }
 
 if (-not $Video) {
-    $filename = "Institucional Sousa Araujo 2025 - 4K.mp4"
     $dirs = @((Join-Path $env:USERPROFILE "Downloads"),
               (Join-Path $env:USERPROFILE "Videos"),
               (Get-Location).Path)
-    $found = @($dirs | ForEach-Object { Join-Path $_ $filename } | Where-Object { Test-Path -LiteralPath $_ })
+    $found = @($dirs | Where-Object { Test-Path -LiteralPath $_ } |
+        ForEach-Object { Get-ChildItem -LiteralPath $_ -File -Filter "*.mp4" -ErrorAction SilentlyContinue } |
+        Where-Object { $_.Name -like "*institucional*" } |
+        Select-Object -ExpandProperty FullName -Unique)
     if ($found.Count -ne 1) {
-        throw "Video nao encontrado de forma inequivoca em Downloads, Videos ou pasta atual. Informe -Video 'C:\caminho\Institucional Sousa Araujo 2025 - 4K.mp4'."
+        throw "Video institucional nao encontrado de forma unica em Downloads, Videos ou pasta atual. Informe -Video 'C:\Videos\institucional.mp4'."
     }
     $Video = $found[0]
 }
