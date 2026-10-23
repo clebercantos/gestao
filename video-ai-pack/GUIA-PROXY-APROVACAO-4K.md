@@ -1,4 +1,4 @@
-# Sousa Araujo | proxy com IA, aprovação e master 4K
+# Vídeo institucional | proxy com IA, aprovação e master 4K
 
 **Objetivo:** retirar a afirmação sobre a 17ª maior construtora do Brasil e a cena correspondente, sem alterar outras partes do institucional.
 
@@ -18,9 +18,9 @@ git pull origin main
 powershell -ExecutionPolicy Bypass -File .\video-ai-pack\tools\automatizar-video.ps1
 ```
 
-A rotina descobre o vídeo exato se houver **uma única** correspondência nessas pastas. Se estiver em outro local, passe `-Video "F:\Caminho\Institucional Sousa Araujo 2025 - 4K.mp4"`.
+A rotina descobre o vídeo exato se houver **uma única** correspondência nessas pastas. Se estiver em outro local, passe `-Video "F:\Caminho\institucional.mp4"`.
 
-2. Ela gera, numa pasta `REVISAO_Institucional Sousa Araujo 2025 - 4K` ao lado do MP4 original:
+2. Ela gera, numa pasta `REVISAO_institucional` ao lado do MP4 original:
 
 - `proxy_720p.mp4`, mantendo FPS e referências temporais
 - `transcricao.txt` e `palavras.json`, alinhamento por palavras
@@ -39,7 +39,7 @@ Para NVENC RTX 3090: acrescente `-UsarGPU` ao comando final. O resultado será `
 
 ## Google Drive, se já houver rclone configurado
 
-Usando um remote OAuth previamente autorizado (`rclone listremotes`) acrescente ao comando de preparo e de exportação `-DriveRemoto "gdrive:Trevisa/RevisaoSousaAraujo"`. A rotina envia somente amostra, transcrição e revisão ao preparar, e o MP4 editado ao finalizar. Não envia o original automaticamente. **Nunca inclua tokens ou vídeos de clientes no GitHub.**
+Usando um remote OAuth previamente autorizado (`rclone listremotes`) acrescente ao comando de preparo e de exportação `-DriveRemoto "gdrive:Trevisa/RevisaoCliente"`. A rotina envia somente amostra, transcrição e revisão ao preparar, e o MP4 editado ao finalizar. Não envia o original automaticamente. **Nunca inclua tokens ou vídeos de clientes no GitHub.**
 
 ## Qualidade editorial
 
