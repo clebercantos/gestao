@@ -32,6 +32,10 @@ jobs:
           c = mod.candidates(words, "17 maior construtora do Brasil")
           assert len(c) == 1 and c[0]["numeral_identificado"], c
           PY
+      - name: Instalar FFmpeg no runner (não vem pré-instalado)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
       - name: Teste FFmpeg e sincronismo de audio/video
         run: |
           ffmpeg -hide_banner -loglevel error -f lavfi -i testsrc2=size=320x180:rate=30:duration=8 -f lavfi -i sine=frequency=440:sample_rate=48000:duration=8 -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest /tmp/original.mp4
