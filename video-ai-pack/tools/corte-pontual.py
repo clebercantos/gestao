@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Corte pontual de uma frase em MP4. Preserva dimensões, fps, cores e original.
+"""Corte pontual de uma frase em MP4. Não altera o visual intencionalmente; preserva o arquivo original.
 A análise de fala é opcional; sem timecodes confirmados, gera plano para revisão.
 Uso:
   py -3.12 corte-pontual.py video.mp4 --buscar "17 maior construtora do Brasil"
@@ -81,7 +81,7 @@ def candidates(words: list[dict], phrase: str) -> list[dict]:
             continue
         begin = max(0, matches[0] - 10)
         before = " ".join(tokens[begin:matches[0]])
-        numeral = bool(re.search(r"\b(17|dezessete|decima\s+setima|decimo\s+setimo|decima\s+sete)\b", before))
+        numeral = bool(re.search(r"\b(17|17a|17o|dezessete|decima\s+setima|decimo\s+setimo|decima\s+sete)\b", before))
         if "17" in requested and not numeral:
             continue
         # Recupera o começo da frase falada, limitado a oito segundos.
