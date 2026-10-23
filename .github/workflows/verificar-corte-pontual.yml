@@ -2,7 +2,7 @@ name: Verificar corte pontual de video
 on:
   pull_request:
     paths:
-      - 'video-ai-pack/tools/corte-pontual.py'
+      - 'video-ai-pack/tools/corte-pontual.py'\n      - 'video-ai-pack/tools/edicao-aprovacao.py'\n      - 'video-ai-pack/tools/automatizar-video.ps1'
       - '.github/workflows/verificar-corte-pontual.yml'
   push:
     paths:
@@ -50,13 +50,53 @@ jobs:
           assert abs(float(b["format"]["duration"])-6.34) < 0.25, b
           assert float(a["format"]["duration"]) >= 7.9
           PY
+      - name: Validar fluxo proxy, aprovacao e 4K sem Whisper
+        run: |
+          python -m py_compile video-ai-pack/tools/edicao-aprovacao.py
+          mkdir -p /tmp/edicao_teste
+          python - <<'PY'
+          import json, pathlib
+          words=[]
+          frase=["Somos","a","17ª","maior","construtora","do","Brasil."]
+          import importlib.util
+          spec=importlib.util.spec_from_file_location("corte","video-ai-pack/tools/corte-pontual.py")
+          mod=importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(mod)
+          for i,t in enumerate(frase):
+              words.append({"raw":t,"token":mod.clean(t),"start":round(1.2+i*.32,3),"end":round(1.45+i*.32,3)})
+          pathlib.Path("/tmp/edicao_teste/palavras.json").write_text(json.dumps(words),encoding="utf-8")
+          PY
+          python video-ai-pack/tools/edicao-aprovacao.py preparar /tmp/original.mp4 --trabalho /tmp/edicao_teste
+          test -f /tmp/edicao_teste/proxy_720p.mp4
+          ls /tmp/edicao_teste/AMOSTRA_DA_EMENDA_*.mp4
+          if python video-ai-pack/tools/edicao-aprovacao.py finalizar /tmp/original.mp4 --trabalho /tmp/edicao_teste; then
+            echo "ERRO: exportou sem aprovação"
+            exit 1
+          fi
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path("/tmp/edicao_teste/revisao.json")
+          d=json.loads(p.read_text(encoding="utf-8"))
+          assert d["inicio"] is not None and d["fim"] is not None,d
+          d["aprovado"]=True
+          d["aprovador"]="CI TESTE SINTETICO"
+          p.write_text(json.dumps(d),encoding="utf-8")
+          PY
+          python video-ai-pack/tools/edicao-aprovacao.py finalizar /tmp/original.mp4 --trabalho /tmp/edicao_teste
+          python - <<'PY'
+          import json, pathlib
+          d=json.loads(pathlib.Path("/tmp/edicao_teste/QA_FINAL.json").read_text())
+          assert d["passou"],d
+          assert d["resolucao_original"]==d["resolucao_saida"],d
+          assert pathlib.Path("/tmp/original.mp4").exists()
+          PY
   validar_instalador_windows:
     runs-on: windows-latest
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - name: Verificar sintaxe PowerShell do instalador
+      - name: Verificar sintaxe PowerShell dos instaladores
         shell: pwsh
         run: |
           $tokens = $null
