@@ -251,3 +251,13 @@ mas pede confirmação antes de rodar comandos destrutivos ou de rede que elas s
 - Resolve: [barckley75/resolve-claude-mcp](https://github.com/barckley75/resolve-claude-mcp)
 - Conectores: [invideo MCP](https://invideo.io/mcp/), [OpusClip MCP](https://www.opus.pro/mcp), [Adobe for creativity](https://blog.adobe.com/en/publish/2026/04/28/adobe-for-creativity-connector), [OpenClip MCP](https://openclip.app/mcp)
 - Skills: [video-editing-skill](https://github.com/6missedcalls/video-editing-skill)
+
+
+## Integrações complementares: ArtCraft, ChatCut e corte pontual
+
+O Windows pode usar o [instalador ArtCraft + ChatCut](tools/instalar-artcraft-chatcut.ps1)
+com login OAuth interativo do ChatCut para Claude Code e Codex. Para cortes por fala,
+o script [corte-pontual.py](tools/corte-pontual.py) localiza frases com faster-whisper,
+gera um plano para revisão e exporta somente o trecho corrigido usando FFmpeg.
+**Não altere o vídeo original e não envie mídias privadas ao repositório público.**
+Leia o [guia de integração e verificação](INTEGRACOES-ARTCRAFT-CHATCUT.md) antes de executar.
