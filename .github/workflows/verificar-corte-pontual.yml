@@ -50,3 +50,20 @@ jobs:
           assert abs(float(b["format"]["duration"])-6.34) < 0.25, b
           assert float(a["format"]["duration"]) >= 7.9
           PY
+  validar_instalador_windows:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verificar sintaxe PowerShell do instalador
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          $path = "video-ai-pack/tools/instalar-artcraft-chatcut.ps1"
+          $null = [System.Management.Automation.Language.Parser]::ParseFile($path, [ref]$tokens, [ref]$errors)
+          if ($errors.Count -gt 0) {
+              $errors | Format-List | Out-String | Write-Error
+              exit 1
+          }
