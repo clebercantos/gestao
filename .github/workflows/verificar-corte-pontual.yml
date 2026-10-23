@@ -2,11 +2,15 @@ name: Verificar corte pontual de video
 on:
   pull_request:
     paths:
-      - 'video-ai-pack/tools/corte-pontual.py'\n      - 'video-ai-pack/tools/edicao-aprovacao.py'\n      - 'video-ai-pack/tools/automatizar-video.ps1'
+      - 'video-ai-pack/tools/corte-pontual.py'
+      - 'video-ai-pack/tools/edicao-aprovacao.py'
+      - 'video-ai-pack/tools/automatizar-video.ps1'
       - '.github/workflows/verificar-corte-pontual.yml'
   push:
     paths:
       - 'video-ai-pack/tools/corte-pontual.py'
+      - 'video-ai-pack/tools/edicao-aprovacao.py'
+      - 'video-ai-pack/tools/automatizar-video.ps1'
       - '.github/workflows/verificar-corte-pontual.yml'
 jobs:
   validar:
@@ -99,11 +103,12 @@ jobs:
       - name: Verificar sintaxe PowerShell dos instaladores
         shell: pwsh
         run: |
-          $tokens = $null
-          $errors = $null
-          $path = "video-ai-pack/tools/instalar-artcraft-chatcut.ps1"
-          $null = [System.Management.Automation.Language.Parser]::ParseFile($path, [ref]$tokens, [ref]$errors)
-          if ($errors.Count -gt 0) {
-              $errors | Format-List | Out-String | Write-Error
-              exit 1
+          foreach ($path in @("video-ai-pack/tools/instalar-artcraft-chatcut.ps1", "video-ai-pack/tools/automatizar-video.ps1")) {
+              $tokens = $null
+              $errors = $null
+              $null = [System.Management.Automation.Language.Parser]::ParseFile($path, [ref]$tokens, [ref]$errors)
+              if ($errors.Count -gt 0) {
+                  $errors | Format-List | Out-String | Write-Error
+                  exit 1
+              }
           }

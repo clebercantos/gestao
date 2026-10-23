@@ -69,12 +69,18 @@ if ($DriveRemoto) {
     $remote = $DriveRemoto.TrimEnd("/", "\")
     # Só arquivos de revisão; não transfere o master confidencial por engano.
     if (-not $Finalizar) {
-        foreach ($name in @("AMOSTRA_DA_EMENDA.mp4","revisao.json","transcricao.txt")) {
+        foreach ($name in @("revisao.json", "transcricao.txt")) {
             $local = Join-Path $PastaTrabalho $name
             if (Test-Path -LiteralPath $local) {
                 & rclone copyto $local ($remote + "/" + $name) --retries 2 --checkers 2 --transfers 1
                 if ($LASTEXITCODE -ne 0) { throw "Falha ao enviar $name ao Google Drive via rclone." }
             }
+        }
+        $sample = Get-ChildItem -LiteralPath $PastaTrabalho -Filter "AMOSTRA_DA_EMENDA_*.mp4" -File |
+            Sort-Object LastWriteTime -Descending | Select-Object -First 1
+        if ($null -ne $sample) {
+            & rclone copyto $sample.FullName ($remote + "/" + $sample.Name) --retries 2 --checkers 2 --transfers 1
+            if ($LASTEXITCODE -ne 0) { throw "Falha ao enviar amostra ao Drive." }
         }
     } else {
         $final = Get-ChildItem -LiteralPath $PastaTrabalho -Filter "FINAL_4K_*.mp4" -File | Select-Object -First 1
